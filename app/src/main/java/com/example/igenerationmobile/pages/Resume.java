@@ -2,9 +2,11 @@ package com.example.igenerationmobile.pages;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -21,17 +23,16 @@ import java.io.IOException;
 public class Resume extends AppCompatActivity {
 
     private String token;
-
     private ObjectMapper mapper = new ObjectMapper();
-
     private User user;
-
     private ImageView avatar;
     private TextView login;
     private TextView fname;
     private TextView iname;
     private TextView oname;
     private TextView placeName;
+
+    private Button profile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +44,17 @@ public class Resume extends AppCompatActivity {
             token = extras.getString("token");
             new HTTPProcess().execute(token);
         }
+
+        profile = findViewById(R.id.profile);
+
+        profile.setOnClickListener(v -> {
+
+            Intent intent = new Intent(Resume.this, Profile.class);
+            intent.putExtra("token", token);
+            startActivity(intent);
+
+        });
+
     }
 
     private class HTTPProcess extends AsyncTask<String, String, String> {
