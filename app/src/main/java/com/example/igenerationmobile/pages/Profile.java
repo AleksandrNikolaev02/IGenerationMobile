@@ -47,6 +47,11 @@ public class Profile extends AppCompatActivity {
             new HTTPProcess().execute(token);
         }
 
+        resume = findViewById(R.id.resume);
+        rating = findViewById(R.id.rating);
+        options = findViewById(R.id.options);
+        projects = findViewById(R.id.projects);
+
         resume.setOnClickListener(v -> {
             Intent intent = new Intent(Profile.this, Resume.class);
             intent.putExtra("token", token);
