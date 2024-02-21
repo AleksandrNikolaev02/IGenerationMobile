@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="IGNColor">#FFFFFFFF</color>
+    <color name="IGNColorBackground">#1C487B</color>
+    <color name="loginBackground">#FFFFFFFF</color>
+    <color name="colorButtonLogin">#123357</color>
+    <color name="colorHint">#A9A9A9</color>
+</resources>
