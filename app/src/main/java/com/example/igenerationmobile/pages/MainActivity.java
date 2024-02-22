@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
                     System.out.println("Unauthorized");
                     Toast.makeText(MainActivity.this, R.string.error_login, Toast.LENGTH_LONG).show();
                 } else {
-                    Intent intent = new Intent(MainActivity.this, Profile.class);
+                    Intent intent = new Intent(MainActivity.this, ProfileNew.class);
                     System.out.println("Authorised");
                     System.out.println(result);
                     intent.putExtra("token", result);

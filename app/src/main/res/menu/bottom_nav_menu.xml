@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/profile_new"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:title="@string/profile1"
+        android:icon="@drawable/profile"/>
+    <item
+        android:id="@+id/resume_new"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:title="@string/resume"
+        android:icon="@drawable/resume"/>
+    <item
+        android:id="@+id/rating_new"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:title="@string/rating"
+        android:icon="@drawable/rating"/>
+    <item
+        android:id="@+id/options_new"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:title="@string/options"
+        android:icon="@drawable/options"/>
+    <item
+        android:id="@+id/projects_new"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:title="@string/projects"
+        android:icon="@drawable/projects"/>
+</menu>
