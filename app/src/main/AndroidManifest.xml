@@ -19,12 +19,6 @@
             android:name=".pages.ProfileNew"
             android:exported="false" />
         <activity
-            android:name=".pages.Resume"
-            android:exported="false" />
-        <activity
-            android:name=".pages.Profile"
-            android:exported="false" />
-        <activity
             android:name=".pages.MainActivity"
             android:exported="true" >
             <intent-filter>
