@@ -1,5 +1,8 @@
 package com.example.igenerationmobile.fragments;
 
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -7,60 +10,122 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import com.caverock.androidsvg.SVG;
+import com.caverock.androidsvg.SVGParseException;
 import com.example.igenerationmobile.R;
+import com.example.igenerationmobile.http.HTTPMethods;
+import com.example.igenerationmobile.model.Achievement;
+import com.example.igenerationmobile.model.MyAchievement;
+import com.example.igenerationmobile.model.Token;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link Rating#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+
 public class Rating extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private String token;
 
-    public Rating() {
-        // Required empty public constructor
+    private TextView achievements;
+
+    private ObjectMapper mapper = new ObjectMapper();
+
+    public Rating(String token) {
+        this.token = token;
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment Rating.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static Rating newInstance(String param1, String param2) {
-        Rating fragment = new Rating();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+
+        new HTTPProcess().execute();
+
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_rating, container, false);
+        View view = inflater.inflate(R.layout.fragment_rating, container, false);
+
+        achievements = view.findViewById(R.id.achievements);
+
+        return view;
+    }
+
+    private class HTTPProcess extends AsyncTask<String, String, List<String>> {
+
+
+        @Override
+        protected List<String> doInBackground(String... strings) {
+            try {
+                Token tokenObj = (Token) mapper.readValue(token, Token.class);
+                String response = HTTPMethods.myAchievements(tokenObj);
+                List<MyAchievement> myAchievements = mapper.readValue(response, new TypeReference<>() {});
+
+                if (myAchievements.isEmpty()) return new ArrayList<>();
+                else {
+                    String allAchievements = HTTPMethods.achievements(tokenObj);
+                    List<Achievement> achievements = mapper.readValue(allAchievements, new TypeReference<>() {});
+
+                    List<String> result = new ArrayList<>();
+
+                    for (MyAchievement myAchievement : myAchievements) {
+                        for (Achievement achievement : achievements) {
+                            if (myAchievement.getAchievementId() == achievement.getId()) {
+                                result.add(HTTPMethods.getSVGImage(achievement.getIcon()));
+                            }
+                        }
+                    }
+
+                    return result;
+                }
+
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        @Override
+        protected void onPostExecute(List<String> strings) {
+            super.onPostExecute(strings);
+            LinearLayout imageContainer = getActivity().findViewById(R.id.imageContainer);
+            for (String svg : strings) {
+                ImageView image = new ImageView(getActivity());
+                Bitmap bitmap = getBitmapFromSvgData(svg);
+                image.setImageBitmap(bitmap);
+
+                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                image.setLayoutParams(layoutParams);
+
+                imageContainer.addView(image);
+            }
+        }
+
+        public Bitmap getBitmapFromSvgData(String svgData) {
+            try {
+                SVG svg = SVG.getFromString(svgData);
+
+                Bitmap bitmap = Bitmap.createBitmap((int) svg.getDocumentWidth(), (int) svg.getDocumentHeight(), Bitmap.Config.ARGB_8888);
+                Canvas canvas = new Canvas(bitmap);
+                svg.renderToCanvas(canvas);
+
+                return bitmap;
+            } catch (SVGParseException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
     }
 }

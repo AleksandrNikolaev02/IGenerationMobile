@@ -6,6 +6,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
+import android.widget.TextView;
 
 import com.example.igenerationmobile.R;
 import com.example.igenerationmobile.databinding.ActivityProfileNewBinding;
@@ -42,7 +43,7 @@ public class ProfileNew extends AppCompatActivity {
             // cringe
             if (id == R.id.profile_new) ReplaceFragment(new Profile(token));
             if (id == R.id.resume_new) ReplaceFragment(new Resume(token));
-            if (id == R.id.rating_new) ReplaceFragment(new Rating());
+            if (id == R.id.rating_new) ReplaceFragment(new Rating(token));
             if (id == R.id.options_new) ReplaceFragment(new Options());
             if (id == R.id.projects_new) ReplaceFragment(new Projects());
 

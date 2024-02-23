@@ -25,6 +25,8 @@ import java.util.zip.GZIPInputStream;
 public class HTTPMethods {
     private static final String urlApi = "https://innostor.unn.ru/api";
 
+    private static final String urlIGN = "https://i-generation.unn.ru/static/icons";
+
     private static final ObjectMapper mapper = new ObjectMapper();
 
     public static String login(String email, String password) throws IOException {
@@ -122,6 +124,102 @@ public class HTTPMethods {
 
     }
 
+    public static String achievements(Token token) throws IOException {
+        URL url = new URL(urlApi + "/achievements");
+
+        String request = "{}";
+
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("POST");
+        connection.setRequestProperty("Accept", "application/json, text/plain, */*");
+        connection.setRequestProperty("Accept-Encoding", "gzip, deflate, br");
+        connection.setRequestProperty("Accept-Language", "ru,en;q=0.9,en-GB;q=0.8,en-US;q=0.7");
+        connection.setRequestProperty("Authorization", token.getTokenType() + " " + token.getAccessToken());
+        connection.setRequestProperty("Connection", "keep-alive");
+        connection.setRequestProperty("Content-Length", String.valueOf(request.length()));
+        connection.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
+        connection.setRequestProperty("Host", "innostor.unn.ru");
+
+        connection.setDoOutput(true);
+
+        OutputStreamWriter outputStreamWriter = new OutputStreamWriter(connection.getOutputStream());
+
+        outputStreamWriter.write(request);
+        outputStreamWriter.flush();
+        outputStreamWriter.close();
+
+        connection.connect();
+
+        System.out.println(connection.getResponseCode());
+
+        if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) return connection.getResponseMessage();
+
+        InputStream inputStream = new GZIPInputStream(connection.getInputStream());
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+        String line;
+        StringBuilder response = new StringBuilder();
+
+
+        while ((line = reader.readLine()) != null) {
+            response.append(line).append("\n");
+        }
+
+        connection.disconnect();
+        reader.close();
+
+        return response.toString();
+    }
+
+
+    public static String myAchievements(Token token) throws IOException {
+        URL url = new URL(urlApi + "/my-achievements");
+
+        String request = "{\"project_id\":1}";
+
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("POST");
+        connection.setRequestProperty("Accept", "application/json, text/plain, */*");
+        connection.setRequestProperty("Accept-Encoding", "gzip, deflate, br");
+        connection.setRequestProperty("Accept-Language", "ru,en;q=0.9,en-GB;q=0.8,en-US;q=0.7");
+        connection.setRequestProperty("Authorization", token.getTokenType() + " " + token.getAccessToken());
+        connection.setRequestProperty("Connection", "keep-alive");
+        connection.setRequestProperty("Content-Length", String.valueOf(request.length()));
+        connection.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
+        connection.setRequestProperty("Host", "innostor.unn.ru");
+
+        connection.setDoOutput(true);
+
+        OutputStreamWriter outputStreamWriter = new OutputStreamWriter(connection.getOutputStream());
+
+        outputStreamWriter.write(request);
+        outputStreamWriter.flush();
+        outputStreamWriter.close();
+
+        connection.connect();
+
+        System.out.println(connection.getResponseCode());
+
+        if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) return connection.getResponseMessage();
+
+        InputStream inputStream = new GZIPInputStream(connection.getInputStream());
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+        String line;
+        StringBuilder response = new StringBuilder();
+
+
+        while ((line = reader.readLine()) != null) {
+            response.append(line).append("\n");
+        }
+
+        connection.disconnect();
+        reader.close();
+
+        return response.toString();
+
+    }
+
     public static Bitmap getImage(String nameFile) {
         Bitmap bm = null;
         try {
@@ -137,5 +235,29 @@ public class HTTPMethods {
             Log.e(TAG, "Error getting bitmap", e);
         }
         return bm;
+    }
+
+    public static String getSVGImage(String nameFile) {
+        StringBuilder response = new StringBuilder();
+
+        try {
+            URL url = new URL(urlIGN + "/" + nameFile);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+
+            reader.close();
+            connection.disconnect();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return response.toString();
     }
 }
