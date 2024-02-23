@@ -26,7 +26,6 @@ public class ProfileNew extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityProfileNewBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        ReplaceFragment(new Profile());
 
         Bundle extras = getIntent().getExtras();
 
@@ -34,11 +33,14 @@ public class ProfileNew extends AppCompatActivity {
             token = extras.getString("token");
         }
 
+        ReplaceFragment(new Profile(token));
+
+
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
 
             // cringe
-            if (id == R.id.profile_new) ReplaceFragment(new Profile());
+            if (id == R.id.profile_new) ReplaceFragment(new Profile(token));
             if (id == R.id.resume_new) ReplaceFragment(new Resume());
             if (id == R.id.rating_new) ReplaceFragment(new Rating());
             if (id == R.id.options_new) ReplaceFragment(new Options());
