@@ -1,67 +1,115 @@
 package com.example.igenerationmobile.fragments;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Switch;
 
 import com.example.igenerationmobile.R;
+import com.example.igenerationmobile.http.HTTPMethods;
+import com.example.igenerationmobile.model.Token;
+import com.example.igenerationmobile.model.User;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link Options#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.io.IOException;
+
+
 public class Options extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private String token;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private Switch viewingMode;
 
-    public Options() {
-        // Required empty public constructor
+    private ObjectMapper mapper = new ObjectMapper();
+
+    public Options(String token) {
+        this.token = token;
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment Options.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static Options newInstance(String param1, String param2) {
-        Options fragment = new Options();
-        Bundle args = new Bundle();
-
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+
+        if (getActivity() != null) {
+            viewingMode = getActivity().findViewById(R.id.viewingMode);
+
+            if (viewingMode != null) {
+                viewingMode.setOnClickListener(item -> {
+                    boolean checked = ((Switch) item).isChecked();
+                    new HTTPUpdate().execute(checked);
+                });
+            } else {
+                Log.e("OptionsFragment", "viewingMode is null");
+            }
+        } else {
+            Log.e("OptionsFragment", "Activity is null");
         }
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_options, container, false);
+        View view = inflater.inflate(R.layout.fragment_options, container, false);
+
+        viewingMode = view.findViewById(R.id.viewingMode);
+
+        new HTTPProcess().execute();
+
+        viewingMode.setOnClickListener(item -> {
+            boolean checked = ((Switch) item).isChecked();
+            new HTTPUpdate().execute(checked);
+        });
+
+        return view;
+    }
+
+    private class HTTPProcess extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... strings) {
+
+            try {
+                Token tokenObj = (Token) mapper.readValue(token, Token.class);
+                return HTTPMethods.user(tokenObj);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String response) {
+            super.onPostExecute(response);
+
+            try {
+                User user = (User) mapper.readValue(response, User.class);
+                int mode = user.getMode();
+                viewingMode.setChecked(mode != 1);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private class HTTPUpdate extends AsyncTask<Boolean, Void, String> {
+        @Override
+        protected String doInBackground(Boolean... strings) {
+
+            try {
+                Token tokenObj = (Token) mapper.readValue(token, Token.class);
+                HTTPMethods.update(strings[0], tokenObj);
+                return "ok";
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
     }
 }

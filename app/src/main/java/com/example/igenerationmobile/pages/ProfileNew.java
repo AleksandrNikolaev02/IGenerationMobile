@@ -44,7 +44,7 @@ public class ProfileNew extends AppCompatActivity {
             if (id == R.id.profile_new) ReplaceFragment(new Profile(token));
             if (id == R.id.resume_new) ReplaceFragment(new Resume(token));
             if (id == R.id.rating_new) ReplaceFragment(new Rating(token));
-            if (id == R.id.options_new) ReplaceFragment(new Options());
+            if (id == R.id.options_new) ReplaceFragment(new Options(token));
             if (id == R.id.projects_new) ReplaceFragment(new Projects());
 
             return true;

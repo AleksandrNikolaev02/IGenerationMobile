@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
@@ -218,6 +219,37 @@ public class HTTPMethods {
 
         return response.toString();
 
+    }
+
+    public static void update(boolean checked, Token token) throws IOException {
+        URL url = new URL(urlApi + "/profile/update");
+
+        String request = checked ? "{\"mode\":false}" : "{\"mode\":true}";
+
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("PATCH");
+        connection.setRequestProperty("Accept", "application/json, text/plain, */*");
+        connection.setRequestProperty("Accept-Encoding", "gzip, deflate, br");
+        connection.setRequestProperty("Accept-Language", "ru,en;q=0.9,en-GB;q=0.8,en-US;q=0.7");
+        connection.setRequestProperty("Authorization", token.getTokenType() + " " + token.getAccessToken());
+        connection.setRequestProperty("Connection", "keep-alive");
+        connection.setRequestProperty("Content-Length", String.valueOf(request.length()));
+        connection.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
+        connection.setRequestProperty("Host", "innostor.unn.ru");
+
+        connection.setDoOutput(true);
+
+        OutputStreamWriter outputStreamWriter = new OutputStreamWriter(connection.getOutputStream());
+
+        outputStreamWriter.write(request);
+        outputStreamWriter.flush();
+        outputStreamWriter.close();
+
+        connection.connect();
+
+        System.out.println(connection.getResponseCode());
+
+        connection.disconnect();
     }
 
     public static Bitmap getImage(String nameFile) {

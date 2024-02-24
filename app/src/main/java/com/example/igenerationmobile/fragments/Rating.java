@@ -28,7 +28,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.text.StringEscapeUtils;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,12 +35,7 @@ import java.util.Map;
 
 public class Rating extends Fragment {
 
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
     private String token;
-
-    private TextView achievements;
 
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -62,11 +56,7 @@ public class Rating extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_rating, container, false);
-
-        achievements = view.findViewById(R.id.achievements);
-
-        return view;
+        return inflater.inflate(R.layout.fragment_rating, container, false);
     }
 
     private class HTTPProcess extends AsyncTask<String, String, HashMap<Achievement, String>> {

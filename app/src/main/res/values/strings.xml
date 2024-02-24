@@ -12,6 +12,7 @@
     <string name="contentDescription">TODO</string>
     <string name="FIO">FIO</string>
 
+    <!-- Меню -->
     <string name="profile1">Обзор</string>
     <string name="resume">Профайл</string>
     <string name="rating">Рейтинг</string>
@@ -20,6 +21,10 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    <!-- Рейтинг -->
     <string name="myAchievements">Достижения</string>
+
+    <!-- Настройки -->
+    <string name="viewingMode">Режим просмотра</string>
 
 </resources>
