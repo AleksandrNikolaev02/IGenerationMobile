@@ -2,6 +2,7 @@ package com.example.igenerationmobile.fragments;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
@@ -24,9 +25,13 @@ import com.example.igenerationmobile.model.Token;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.apache.commons.text.StringEscapeUtils;
+
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class Rating extends Fragment {
@@ -64,27 +69,27 @@ public class Rating extends Fragment {
         return view;
     }
 
-    private class HTTPProcess extends AsyncTask<String, String, List<String>> {
+    private class HTTPProcess extends AsyncTask<String, String, HashMap<Achievement, String>> {
 
 
         @Override
-        protected List<String> doInBackground(String... strings) {
+        protected HashMap<Achievement, String> doInBackground(String... strings) {
             try {
                 Token tokenObj = (Token) mapper.readValue(token, Token.class);
                 String response = HTTPMethods.myAchievements(tokenObj);
                 List<MyAchievement> myAchievements = mapper.readValue(response, new TypeReference<>() {});
 
-                if (myAchievements.isEmpty()) return new ArrayList<>();
+                if (myAchievements.isEmpty()) return new HashMap<>();
                 else {
                     String allAchievements = HTTPMethods.achievements(tokenObj);
-                    List<Achievement> achievements = mapper.readValue(allAchievements, new TypeReference<>() {});
 
-                    List<String> result = new ArrayList<>();
+                    HashMap<Achievement, String> result = new HashMap<>();
+                    List<Achievement> achievements = mapper.readValue(allAchievements, new TypeReference<>() {});
 
                     for (MyAchievement myAchievement : myAchievements) {
                         for (Achievement achievement : achievements) {
                             if (myAchievement.getAchievementId() == achievement.getId()) {
-                                result.add(HTTPMethods.getSVGImage(achievement.getIcon()));
+                                result.put(achievement, HTTPMethods.getSVGImage(achievement.getIcon()));
                             }
                         }
                     }
@@ -98,18 +103,34 @@ public class Rating extends Fragment {
         }
 
         @Override
-        protected void onPostExecute(List<String> strings) {
+        protected void onPostExecute(HashMap<Achievement, String> strings) {
             super.onPostExecute(strings);
             LinearLayout imageContainer = getActivity().findViewById(R.id.imageContainer);
-            for (String svg : strings) {
+
+            for (Map.Entry<Achievement, String> entry : strings.entrySet()) {
+                LinearLayout linearLayout = new LinearLayout(getActivity());
+                linearLayout.setOrientation(LinearLayout.HORIZONTAL);
+
                 ImageView image = new ImageView(getActivity());
-                Bitmap bitmap = getBitmapFromSvgData(svg);
+                Bitmap bitmap = getBitmapFromSvgData(entry.getValue());
                 image.setImageBitmap(bitmap);
-
-                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(200, 200);
                 image.setLayoutParams(layoutParams);
+                image.setBackgroundColor(Color.parseColor(entry.getKey().getColor()));
 
-                imageContainer.addView(image);
+                TextView value = new TextView(getActivity());
+                value.setText(String.valueOf(entry.getKey().getValue()));
+
+                TextView name = new TextView(getActivity());
+                name.setText(StringEscapeUtils.unescapeJava(entry.getKey().getName()));
+                name.setTextColor(Color.parseColor("#ffffff"));
+
+
+                linearLayout.addView(image);
+                linearLayout.addView(name);
+
+                imageContainer.addView(linearLayout);
+                imageContainer.addView(value);
             }
         }
 
