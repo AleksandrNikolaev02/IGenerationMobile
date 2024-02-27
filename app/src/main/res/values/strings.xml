@@ -27,4 +27,19 @@
     <!-- Настройки -->
     <string name="viewingMode">Режим просмотра</string>
 
+    <!-- Проекты -->
+    <string-array name="dates">
+        <item>2019 осень</item>
+        <item>2019 зима</item>
+        <item>2020 весна</item>
+        <item>2020 осень</item>
+        <item>2021 весна</item>
+        <item>2021 осень</item>
+        <item>2022 весна</item>
+        <item>2022 осень</item>
+        <item>2023 весна</item>
+        <item>2023 осень</item>
+        <item>2024 весна</item>
+    </string-array>
+
 </resources>

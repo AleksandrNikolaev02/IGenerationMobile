@@ -1,9 +1,12 @@
 package com.example.igenerationmobile.fragments;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -37,6 +40,7 @@ public class Profile extends Fragment {
     private ImageView avatar;
     private User user;
 
+    // FIXME при повороте экрана приложения на этой странице, приложение падает!
     public Profile(String token) {
         this.token = token;
     }
@@ -86,7 +90,18 @@ public class Profile extends Fragment {
                 isProcessed = true;
 
                 try {
-                    user = (User) mapper.readValue(result, User.class);
+                    user = mapper.readValue(result, User.class);
+
+
+                    if (getActivity() != null) {
+                        SharedPreferences sharedPreferences = getActivity().getApplicationContext().getSharedPreferences("Params", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putInt("user_id", user.getId());
+                        editor.apply();
+                    }
+
+
+
                     System.out.println(StringEscapeUtils.unescapeJava(user.getFname()));
 
                     String name = StringEscapeUtils.unescapeJava(user.getFname()) + " " +

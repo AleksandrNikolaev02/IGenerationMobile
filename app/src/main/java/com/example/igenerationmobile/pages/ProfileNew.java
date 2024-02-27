@@ -36,7 +36,6 @@ public class ProfileNew extends AppCompatActivity {
 
         ReplaceFragment(new Profile(token));
 
-
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
 
@@ -45,7 +44,7 @@ public class ProfileNew extends AppCompatActivity {
             if (id == R.id.resume_new) ReplaceFragment(new Resume(token));
             if (id == R.id.rating_new) ReplaceFragment(new Rating(token));
             if (id == R.id.options_new) ReplaceFragment(new Options(token));
-            if (id == R.id.projects_new) ReplaceFragment(new Projects());
+            if (id == R.id.projects_new) ReplaceFragment(new Projects(token));
 
             return true;
         });
