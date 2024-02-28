@@ -7,25 +7,26 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.example.igenerationmobile.R;
+import com.example.igenerationmobile.adapters.AA_RecyclerAdapter;
 import com.example.igenerationmobile.http.HTTPMethods;
 import com.example.igenerationmobile.model.MyProject;
 import com.example.igenerationmobile.model.Token;
+import com.example.igenerationmobile.model.RecyclerModel;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.apache.commons.text.StringEscapeUtils;
-import org.w3c.dom.Text;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,9 @@ public class Projects extends Fragment {
     private ObjectMapper mapper = new ObjectMapper();
     private String token;
 
+    private RecyclerView recyclerView;
+
+    private AA_RecyclerAdapter adapter;
     private Integer user_id;
 
     public Projects(String token) {
@@ -57,7 +61,16 @@ public class Projects extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        return inflater.inflate(R.layout.fragment_projects, container, false);
+        View view = inflater.inflate(R.layout.fragment_projects, container, false);
+
+        recyclerView = view.findViewById(R.id.mRecyclerView);
+
+        adapter = new AA_RecyclerAdapter(getActivity(), new ArrayList<>());
+
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        return view;
     }
 
     private class HTTPProcess extends AsyncTask<String, String, HashMap<MyProject, Bitmap>> {
@@ -84,27 +97,19 @@ public class Projects extends Fragment {
         @Override
         protected void onPostExecute(HashMap<MyProject, Bitmap> images) {
             super.onPostExecute(images);
-            LinearLayout imageContainer = getActivity().findViewById(R.id.imageContainer);
+
             for (Map.Entry<MyProject, Bitmap> entry : images.entrySet()) {
-                LinearLayout linearLayout = new LinearLayout(getActivity());
-                linearLayout.setOrientation(LinearLayout.VERTICAL);
+                String roleInProject = user_id == entry.getKey().getAuthor_id() ? "Автор" : "Менеджер";
 
-                ImageView image = new ImageView(getActivity());
-                image.setImageBitmap(entry.getValue());
-                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT);
-                image.setLayoutParams(layoutParams);
-                linearLayout.addView(image);
+                int index_elem = adapter.getItemCount();
 
-                TextView text = new TextView(getActivity());
-                text.setText(user_id == entry.getKey().getAuthor_id() ? "Автор" : "Менеджер");
+                adapter.list.add(new RecyclerModel(entry.getValue(),
+                        roleInProject,
+                        StringEscapeUtils.unescapeJava(entry.getKey().getTitle()),
+                        entry.getKey().getCreated_at()));
 
-                TextView title = new TextView(getActivity());
-                text.setText(StringEscapeUtils.unescapeJava(entry.getKey().getTitle()));
+                adapter.notifyItemInserted(index_elem);
 
-                imageContainer.addView(linearLayout);
-                imageContainer.addView(text);
-                imageContainer.addView(title);
             }
         }
     }
