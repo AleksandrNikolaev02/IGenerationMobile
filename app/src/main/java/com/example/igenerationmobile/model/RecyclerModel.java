@@ -2,17 +2,23 @@ package com.example.igenerationmobile.model;
 
 import android.graphics.Bitmap;
 
+import androidx.annotation.NonNull;
+
 public class RecyclerModel {
     private Bitmap image;
     private String role;
     private String title;
     private String date;
 
-    public RecyclerModel(Bitmap image, String role, String title, String date) {
+    private int project_id;
+
+
+    public RecyclerModel(Bitmap image, String role, String title, String date, int project_id) {
         this.image = image;
         this.role = role;
         this.title = title;
         this.date = date;
+        this.project_id = project_id;
     }
 
     public Bitmap getImage() {
@@ -29,5 +35,20 @@ public class RecyclerModel {
 
     public String getDate() {
         return date;
+    }
+
+    public int getProject_id() {
+        return project_id;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "RecyclerModel{" +
+                "image=" + image +
+                ", role='" + role + '\'' +
+                ", title='" + title + '\'' +
+                ", date='" + date + '\'' +
+                '}';
     }
 }

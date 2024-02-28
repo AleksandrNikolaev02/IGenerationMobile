@@ -15,13 +15,6 @@
 <!--        app:layout_constraintLeft_toLeftOf="parent"-->
 <!--        app:layout_constraintTop_toTopOf="parent" />-->
 
-<!--    <LinearLayout-->
-<!--        android:id="@+id/imageContainer"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:orientation="vertical">-->
-<!--    </LinearLayout>-->
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/mRecyclerView"
         android:layout_width="match_parent"

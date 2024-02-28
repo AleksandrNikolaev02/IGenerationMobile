@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.igenerationmobile.R;
+import com.example.igenerationmobile.interfaces.RecyclerInterface;
 import com.example.igenerationmobile.model.RecyclerModel;
 
 import java.util.ArrayList;
@@ -20,11 +21,14 @@ public class AA_RecyclerAdapter extends RecyclerView.Adapter<AA_RecyclerAdapter.
 
     private Context context;
 
+    private final RecyclerInterface recyclerInterface;
+
     public List<RecyclerModel> list;
 
-    public AA_RecyclerAdapter(Context context, ArrayList<RecyclerModel> list) {
+    public AA_RecyclerAdapter(Context context, ArrayList<RecyclerModel> list, RecyclerInterface recyclerInterface) {
         this.context = context;
         this.list = list;
+        this.recyclerInterface = recyclerInterface;
     }
 
     @NonNull
@@ -32,7 +36,7 @@ public class AA_RecyclerAdapter extends RecyclerView.Adapter<AA_RecyclerAdapter.
     public AA_RecyclerAdapter.AdapterHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.recycler_view_row, parent, false);
-        return new AA_RecyclerAdapter.AdapterHolder(view);
+        return new AA_RecyclerAdapter.AdapterHolder(view, recyclerInterface);
     }
 
     @Override
@@ -53,12 +57,22 @@ public class AA_RecyclerAdapter extends RecyclerView.Adapter<AA_RecyclerAdapter.
         ImageView image;
         TextView role, date, title;
 
-        public AdapterHolder(@NonNull View itemView) {
+        public AdapterHolder(@NonNull View itemView, RecyclerInterface recyclerInterface) {
             super(itemView);
             image = itemView.findViewById(R.id.imageView);
             role = itemView.findViewById(R.id.role);
             date = itemView.findViewById(R.id.date);
             title = itemView.findViewById(R.id.title);
+
+            itemView.setOnClickListener(v -> {
+                if (recyclerInterface != null) {
+                    int position = getAdapterPosition();
+
+                    if (position != RecyclerView.NO_POSITION) {
+                        recyclerInterface.onItemClick(position);
+                    }
+                }
+            });
         }
     }
 }

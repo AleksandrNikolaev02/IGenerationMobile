@@ -1,6 +1,7 @@
 package com.example.igenerationmobile.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
@@ -17,9 +18,11 @@ import android.view.ViewGroup;
 import com.example.igenerationmobile.R;
 import com.example.igenerationmobile.adapters.AA_RecyclerAdapter;
 import com.example.igenerationmobile.http.HTTPMethods;
+import com.example.igenerationmobile.interfaces.RecyclerInterface;
 import com.example.igenerationmobile.model.MyProject;
 import com.example.igenerationmobile.model.Token;
 import com.example.igenerationmobile.model.RecyclerModel;
+import com.example.igenerationmobile.pages.MyProjectPage;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -32,9 +35,9 @@ import java.util.List;
 import java.util.Map;
 
 
-public class Projects extends Fragment {
+public class Projects extends Fragment implements RecyclerInterface {
 
-    private ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
     private String token;
 
     private RecyclerView recyclerView;
@@ -65,12 +68,26 @@ public class Projects extends Fragment {
 
         recyclerView = view.findViewById(R.id.mRecyclerView);
 
-        adapter = new AA_RecyclerAdapter(getActivity(), new ArrayList<>());
+        adapter = new AA_RecyclerAdapter(getActivity(), new ArrayList<>(), this);
 
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         return view;
+    }
+
+    @Override
+    public void onItemClick(int position) {
+        Intent intent = new Intent(getActivity(), MyProjectPage.class);
+        System.out.println(adapter.list.get(position));
+        try {
+            String model = mapper.writeValueAsString(adapter.list.get((position)));
+            intent.putExtra("model", model);
+            intent.putExtra("token", token);
+            startActivity(intent);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private class HTTPProcess extends AsyncTask<String, String, HashMap<MyProject, Bitmap>> {
@@ -106,7 +123,8 @@ public class Projects extends Fragment {
                 adapter.list.add(new RecyclerModel(entry.getValue(),
                         roleInProject,
                         StringEscapeUtils.unescapeJava(entry.getKey().getTitle()),
-                        entry.getKey().getCreated_at()));
+                        entry.getKey().getCreated_at().split(" ")[0],
+                        entry.getKey().getProject_id()));
 
                 adapter.notifyItemInserted(index_elem);
 
