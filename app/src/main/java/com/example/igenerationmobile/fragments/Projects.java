@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +29,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.apache.commons.text.StringEscapeUtils;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -80,14 +82,21 @@ public class Projects extends Fragment implements RecyclerInterface {
     public void onItemClick(int position) {
         Intent intent = new Intent(getActivity(), MyProjectPage.class);
         System.out.println(adapter.list.get(position));
-        try {
-            String model = mapper.writeValueAsString(adapter.list.get((position)));
-            intent.putExtra("model", model);
-            intent.putExtra("token", token);
-            startActivity(intent);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+
+        intent.putExtra("project_id", adapter.list.get(position).getProject_id());
+        intent.putExtra("token", token);
+        if (getActivity() != null) {
+            SharedPreferences sharedPreferences = getActivity().getApplicationContext().getSharedPreferences("Params", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            adapter.list.get(position).getImage().compress(Bitmap.CompressFormat.PNG, 100, baos);
+            byte[] b = baos.toByteArray();
+            String encoded = Base64.encodeToString(b, Base64.DEFAULT);
+            editor.putString("project_image", encoded);
+            editor.apply();
         }
+
+        startActivity(intent);
     }
 
     private class HTTPProcess extends AsyncTask<String, String, HashMap<MyProject, Bitmap>> {
@@ -102,7 +111,8 @@ public class Projects extends Fragment implements RecyclerInterface {
                 HashMap<MyProject, Bitmap> images = new HashMap<>();
 
                 for (MyProject project : myProjects) {
-                    images.put(project, HTTPMethods.getImage(project.getImg_file()));
+                    Bitmap image = HTTPMethods.getImage(project.getImg_file());
+                    images.put(project, image);
                 }
 
                 return images;
