@@ -6,12 +6,24 @@
     android:layout_height="match_parent"
     tools:context=".pages.MyProjectPage">
 
-    <ImageView
-        android:id="@+id/test_image"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+
+    <RelativeLayout
+        android:id="@+id/frameLayout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView2"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:src="@drawable/projects"
-        android:contentDescription="TODO" />
+        app:layout_constraintTop_toTopOf="parent">
+
+    </RelativeLayout>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigationView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/frameLayout"
+        app:menu="@menu/project_menu"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

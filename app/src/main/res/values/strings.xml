@@ -42,4 +42,15 @@
         <item>2024 весна</item>
     </string-array>
 
+    <!-- Меню проекта -->
+    <string name="viewProject">Обзор</string>
+    <string name="usersProject">Участники</string>
+    <string name="trajectoryProject">Траектория</string>
+
+    <!-- Описание проекта (ViewProject) -->
+    <string name="created">Создан</string>
+    <string name="place">Место</string>
+    <string name="ratingProject">Рейтинг</string>
+
+
 </resources>

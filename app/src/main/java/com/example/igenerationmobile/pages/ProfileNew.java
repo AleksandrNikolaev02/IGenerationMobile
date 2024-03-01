@@ -6,15 +6,14 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
-import android.widget.TextView;
 
 import com.example.igenerationmobile.R;
 import com.example.igenerationmobile.databinding.ActivityProfileNewBinding;
-import com.example.igenerationmobile.fragments.Options;
-import com.example.igenerationmobile.fragments.Profile;
-import com.example.igenerationmobile.fragments.Projects;
-import com.example.igenerationmobile.fragments.Rating;
-import com.example.igenerationmobile.fragments.Resume;
+import com.example.igenerationmobile.fragments.profile.Options;
+import com.example.igenerationmobile.fragments.profile.Profile;
+import com.example.igenerationmobile.fragments.profile.Projects;
+import com.example.igenerationmobile.fragments.profile.Rating;
+import com.example.igenerationmobile.fragments.profile.Resume;
 
 public class ProfileNew extends AppCompatActivity {
 

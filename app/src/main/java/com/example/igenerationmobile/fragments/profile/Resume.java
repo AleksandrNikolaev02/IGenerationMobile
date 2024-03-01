@@ -1,4 +1,4 @@
-package com.example.igenerationmobile.fragments;
+package com.example.igenerationmobile.fragments.profile;
 
 import android.graphics.Bitmap;
 import android.os.AsyncTask;

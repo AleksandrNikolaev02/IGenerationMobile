@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/viewProject"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:title="@string/viewProject"
+        android:icon="@drawable/view_project"/>
+    <item
+        android:id="@+id/usersProject"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:title="@string/usersProject"
+        android:icon="@drawable/users_project"/>
+    <item
+        android:id="@+id/trajectoryProject"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:title="@string/trajectoryProject"
+        android:icon="@drawable/trajectory_project"/>
+</menu>

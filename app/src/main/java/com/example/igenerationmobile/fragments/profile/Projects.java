@@ -1,9 +1,10 @@
-package com.example.igenerationmobile.fragments;
+package com.example.igenerationmobile.fragments.profile;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
@@ -111,7 +112,14 @@ public class Projects extends Fragment implements RecyclerInterface {
                 HashMap<MyProject, Bitmap> images = new HashMap<>();
 
                 for (MyProject project : myProjects) {
-                    Bitmap image = HTTPMethods.getImage(project.getImg_file());
+                    Bitmap image;
+                    if (project.getImg_file().isEmpty()) {
+                        image = Bitmap.createBitmap(100, 100,
+                                Bitmap.Config.ARGB_8888);
+                        image.eraseColor(Color.BLUE);
+                    } else {
+                        image = HTTPMethods.getImage(project.getImg_file());
+                    }
                     images.put(project, image);
                 }
 

@@ -301,7 +301,7 @@ public class HTTPMethods {
     }
 
     public static String projectID(Token token, Integer projectID) throws IOException {
-        URL url = new URL(urlApi + "/my-projects");
+        URL url = new URL(urlApi + "/project-id");
 
         String request = String.format(Locale.US,"{\"project_id\":1,\"id\":%d}", projectID);
 

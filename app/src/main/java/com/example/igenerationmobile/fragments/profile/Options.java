@@ -1,4 +1,4 @@
-package com.example.igenerationmobile.fragments;
+package com.example.igenerationmobile.fragments.profile;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
