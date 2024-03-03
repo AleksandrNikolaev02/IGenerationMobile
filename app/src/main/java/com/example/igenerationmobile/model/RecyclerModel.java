@@ -12,13 +12,16 @@ public class RecyclerModel {
 
     private int project_id;
 
+    private int author_id;
 
-    public RecyclerModel(Bitmap image, String role, String title, String date, int project_id) {
+
+    public RecyclerModel(Bitmap image, String role, String title, String date, int project_id, int author_id) {
         this.image = image;
         this.role = role;
         this.title = title;
         this.date = date;
         this.project_id = project_id;
+        this.author_id = author_id;
     }
 
     public Bitmap getImage() {
@@ -39,6 +42,10 @@ public class RecyclerModel {
 
     public int getProject_id() {
         return project_id;
+    }
+
+    public int getAuthor_id() {
+        return author_id;
     }
 
     @NonNull

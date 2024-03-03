@@ -11,24 +11,20 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Base64;
-import android.widget.ImageView;
 
 import com.example.igenerationmobile.R;
 import com.example.igenerationmobile.databinding.ActivityMyProjectPageBinding;
 import com.example.igenerationmobile.fragments.myProject.TrajectoryProject;
 import com.example.igenerationmobile.fragments.myProject.UsersProject;
 import com.example.igenerationmobile.fragments.myProject.ViewProject;
-import com.example.igenerationmobile.fragments.profile.Options;
-import com.example.igenerationmobile.fragments.profile.Profile;
-import com.example.igenerationmobile.fragments.profile.Projects;
-import com.example.igenerationmobile.fragments.profile.Rating;
-import com.example.igenerationmobile.fragments.profile.Resume;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class MyProjectPage extends AppCompatActivity {
 
     private String token;
     private Integer project_id;
+
+    private Integer author_id;
 
     private ActivityMyProjectPageBinding binding;
 
@@ -46,6 +42,7 @@ public class MyProjectPage extends AppCompatActivity {
         if (extras != null) {
             token = extras.getString("token");
             project_id = extras.getInt("project_id");
+            author_id = extras.getInt("author_id");
             SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("Params", Context.MODE_PRIVATE);
             String encoded = sharedPreferences.getString("project_image", "");
             byte[] imageAsBytes = Base64.decode(encoded.getBytes(), Base64.DEFAULT);
@@ -61,7 +58,7 @@ public class MyProjectPage extends AppCompatActivity {
                     ReplaceFragment(new ViewProject(token, projectImage, project_id));
                     break;
                 case R.id.usersProject:
-                    ReplaceFragment(new UsersProject());
+                    ReplaceFragment(new UsersProject(token, project_id, author_id));
                     break;
                 case R.id.trajectoryProject:
                     ReplaceFragment(new TrajectoryProject());

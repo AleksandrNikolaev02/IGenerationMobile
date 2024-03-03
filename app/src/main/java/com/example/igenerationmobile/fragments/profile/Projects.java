@@ -85,6 +85,7 @@ public class Projects extends Fragment implements RecyclerInterface {
         System.out.println(adapter.list.get(position));
 
         intent.putExtra("project_id", adapter.list.get(position).getProject_id());
+        intent.putExtra("author_id", adapter.list.get(position).getAuthor_id());
         intent.putExtra("token", token);
         if (getActivity() != null) {
             SharedPreferences sharedPreferences = getActivity().getApplicationContext().getSharedPreferences("Params", Context.MODE_PRIVATE);
@@ -134,6 +135,7 @@ public class Projects extends Fragment implements RecyclerInterface {
             super.onPostExecute(images);
 
             for (Map.Entry<MyProject, Bitmap> entry : images.entrySet()) {
+                // TODO чтобы определить наставника или эксперта, смотри на status
                 String roleInProject = user_id == entry.getKey().getAuthor_id() ? "Автор" : "Менеджер";
 
                 int index_elem = adapter.getItemCount();
@@ -142,7 +144,8 @@ public class Projects extends Fragment implements RecyclerInterface {
                         roleInProject,
                         StringEscapeUtils.unescapeJava(entry.getKey().getTitle()),
                         entry.getKey().getCreated_at().split(" ")[0],
-                        entry.getKey().getProject_id()));
+                        entry.getKey().getProject_id(),
+                        entry.getKey().getAuthor_id()));
 
                 adapter.notifyItemInserted(index_elem);
 

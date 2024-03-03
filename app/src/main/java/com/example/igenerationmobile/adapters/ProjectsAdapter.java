@@ -13,58 +13,56 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.igenerationmobile.R;
 import com.example.igenerationmobile.interfaces.RecyclerInterface;
-import com.example.igenerationmobile.model.RecyclerModel;
+import com.example.igenerationmobile.model.UserProject;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class AA_RecyclerAdapter extends RecyclerView.Adapter<AA_RecyclerAdapter.AdapterHolder> {
+public class ProjectsAdapter extends RecyclerView.Adapter<ProjectsAdapter.AdapterHolder> {
 
     private Context context;
 
     private final RecyclerInterface recyclerInterface;
 
-    public List<RecyclerModel> list;
+    public List<UserProject> users = new ArrayList<>();
 
-    public AA_RecyclerAdapter(Context context, ArrayList<RecyclerModel> list, RecyclerInterface recyclerInterface) {
+    public ProjectsAdapter(Context context, RecyclerInterface recyclerInterface) {
         this.context = context;
-        this.list = list;
         this.recyclerInterface = recyclerInterface;
     }
 
     @NonNull
     @Override
-    public AA_RecyclerAdapter.AdapterHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ProjectsAdapter.AdapterHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.recycler_view_row, parent, false);
-        return new AA_RecyclerAdapter.AdapterHolder(view, recyclerInterface);
+        View view = inflater.inflate(R.layout.user_project_row, parent, false);
+        return new ProjectsAdapter.AdapterHolder(view, recyclerInterface);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull AA_RecyclerAdapter.AdapterHolder holder, int position) {
-        holder.image.setImageBitmap(list.get(position).getImage());
-        holder.title.setText(list.get(position).getTitle());
-        holder.date.setText(list.get(position).getDate());
-        holder.role.setText(list.get(position).getRole());
-        if (list.get(position).getRole().equals("Автор")) holder.role.setBackgroundColor(Color.GREEN);
+    public void onBindViewHolder(@NonNull ProjectsAdapter.AdapterHolder holder, int position) {
+        holder.image.setImageBitmap(users.get(position).getAvatar());
+        holder.role.setText(users.get(position).getRole());
+        holder.fio.setText(users.get(position).getFio());
+        if (users.get(position).getRole().equals("Автор")) holder.role.setBackgroundColor(Color.GREEN);
     }
 
     @Override
     public int getItemCount() {
-        return this.list.size();
+        return this.users.size();
     }
 
     public static class AdapterHolder extends RecyclerView.ViewHolder {
 
         ImageView image;
-        TextView role, date, title;
+        TextView fio, role;
 
         public AdapterHolder(@NonNull View itemView, RecyclerInterface recyclerInterface) {
             super(itemView);
-            image = itemView.findViewById(R.id.imageView);
-            role = itemView.findViewById(R.id.role);
-            date = itemView.findViewById(R.id.date);
-            title = itemView.findViewById(R.id.title);
+
+            image = itemView.findViewById(R.id.imgProject);
+            fio = itemView.findViewById(R.id.fio);
+            role = itemView.findViewById(R.id.roleProject);
 
             itemView.setOnClickListener(v -> {
                 if (recyclerInterface != null) {
