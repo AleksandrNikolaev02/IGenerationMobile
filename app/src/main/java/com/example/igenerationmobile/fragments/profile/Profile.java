@@ -65,7 +65,7 @@ public class Profile extends Fragment {
         @Override
         protected String doInBackground(String... strings) {
             try {
-                Token token = (Token) mapper.readValue(strings[0], Token.class);
+                Token token = mapper.readValue(strings[0], Token.class);
                 return HTTPMethods.user(token);
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -104,9 +104,6 @@ public class Profile extends Fragment {
                     achievements_sum.setText(rating);
 
                     new HTTPImage().execute(user.getImg_file());
-
-
-
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -118,6 +115,9 @@ public class Profile extends Fragment {
     private class HTTPImage extends AsyncTask<String, Void, Bitmap> {
         @Override
         protected Bitmap doInBackground(String... strings) {
+            if (strings[0].isEmpty()) {
+                return HTTPMethods.getDefaultImage();
+            }
             return HTTPMethods.getImage(strings[0]);
         }
 

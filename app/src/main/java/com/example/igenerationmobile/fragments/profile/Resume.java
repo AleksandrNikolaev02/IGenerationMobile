@@ -25,12 +25,6 @@ import java.io.IOException;
 
 public class Resume extends Fragment {
 
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    private String mParam1;
-    private String mParam2;
-
     private String token;
     private ObjectMapper mapper = new ObjectMapper();
     private User user;
@@ -49,10 +43,6 @@ public class Resume extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         new HTTPProcess().execute(token);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
@@ -76,7 +66,7 @@ public class Resume extends Fragment {
         @Override
         protected String doInBackground(String... strings) {
             try {
-                Token token = (Token) mapper.readValue(strings[0], Token.class);
+                Token token = mapper.readValue(strings[0], Token.class);
                 return HTTPMethods.user(token);
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -91,7 +81,7 @@ public class Resume extends Fragment {
                 isProcessed = true;
 
                 try {
-                    user = (User) mapper.readValue(result, User.class);
+                    user = mapper.readValue(result, User.class);
                     System.out.println(StringEscapeUtils.unescapeJava(user.getFname()));
 
                     new HTTPImage().execute(user.getImg_file());
@@ -114,6 +104,9 @@ public class Resume extends Fragment {
     private class HTTPImage extends AsyncTask<String, Void, Bitmap> {
         @Override
         protected Bitmap doInBackground(String... strings) {
+            if (strings[0].isEmpty()) {
+                return HTTPMethods.getDefaultImage();
+            }
             return HTTPMethods.getImage(strings[0]);
         }
 

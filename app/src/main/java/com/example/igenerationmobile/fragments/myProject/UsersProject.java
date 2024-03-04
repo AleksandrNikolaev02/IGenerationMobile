@@ -88,7 +88,7 @@ public class UsersProject extends Fragment implements RecyclerInterface {
 
     @Override
     public void onItemClick(int position) {
-        System.out.println(position);
+
     }
 
     private class HTTPProcess extends AsyncTask<String, ConcurrentMap<String, Bitmap>, ConcurrentMap<String, Bitmap>> {
@@ -108,7 +108,12 @@ public class UsersProject extends Fragment implements RecyclerInterface {
                     JSONObject user = jsonArray.getJSONObject(i);
                     Thread thread = new Thread(() -> {
                         try {
-                            Bitmap bitmap = HTTPMethods.getImage(user.getString("img_file"));
+                            Bitmap bitmap;
+                            if (user.getString("img_file").isEmpty()) {
+                                bitmap = HTTPMethods.getDefaultImage();
+                            } else {
+                                bitmap = HTTPMethods.getImage(user.getString("img_file"));
+                            }
                             images.put(user.getString("img_file"), bitmap);
                         } catch (JSONException e) {
                             throw new RuntimeException(e);

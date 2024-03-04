@@ -26,7 +26,7 @@ import java.util.zip.GZIPInputStream;
 public class HTTPMethods {
     private static final String urlApi = "https://innostor.unn.ru/api";
 
-    private static final String urlIGN = "https://i-generation.unn.ru/static/icons";
+    private static final String urlIGN = "https://i-generation.unn.ru/static";
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -412,11 +412,28 @@ public class HTTPMethods {
         return bm;
     }
 
+    public static Bitmap getDefaultImage() {
+        Bitmap bm = null;
+        try {
+            URL url = new URL(urlIGN + "/img/avatar_00.png");
+            URLConnection connection = url.openConnection();
+            connection.connect();
+            InputStream is = connection.getInputStream();
+            BufferedInputStream bis = new BufferedInputStream(is);
+            bm = BitmapFactory.decodeStream(bis);
+            bis.close();
+            is.close();
+        } catch (IOException e) {
+            Log.e(TAG, "Error getting bitmap", e);
+        }
+        return bm;
+    }
+
     public static String getSVGImage(String nameFile) {
         StringBuilder response = new StringBuilder();
 
         try {
-            URL url = new URL(urlIGN + "/" + nameFile);
+            URL url = new URL(urlIGN + "/icons/" + nameFile);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
 
