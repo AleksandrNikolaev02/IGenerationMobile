@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/anotherProfile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:title="@string/profile1"
+        android:icon="@drawable/profile"/>
+    <item
+        android:id="@+id/anotherResume"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:title="@string/resume"
+        android:icon="@drawable/resume"/>
+</menu>

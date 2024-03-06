@@ -16,11 +16,8 @@ import com.example.igenerationmobile.R;
 import com.example.igenerationmobile.http.HTTPMethods;
 import com.example.igenerationmobile.model.ProjectID;
 import com.example.igenerationmobile.model.Token;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 

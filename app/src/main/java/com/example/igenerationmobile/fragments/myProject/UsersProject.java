@@ -1,6 +1,7 @@
 package com.example.igenerationmobile.fragments.myProject;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
@@ -10,6 +11,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +22,8 @@ import com.example.igenerationmobile.http.HTTPMethods;
 import com.example.igenerationmobile.interfaces.RecyclerInterface;
 import com.example.igenerationmobile.model.Token;
 import com.example.igenerationmobile.model.UserProject;
+import com.example.igenerationmobile.pages.ProfileAnotherUser;
+import com.example.igenerationmobile.pages.ProfileNew;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.apache.commons.text.StringEscapeUtils;
@@ -27,9 +31,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -88,7 +95,34 @@ public class UsersProject extends Fragment implements RecyclerInterface {
 
     @Override
     public void onItemClick(int position) {
+        Intent intent;
+        if (adapter.users.get(position).getId().equals(user_id)) {
+            intent = new Intent(getActivity(), ProfileNew.class);
 
+            intent.putExtra("token", token);
+
+        } else {
+            intent = new Intent(requireActivity(), ProfileAnotherUser.class);
+
+            // encoded image
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            adapter.users.get(position).getAvatar().compress(Bitmap.CompressFormat.PNG, 100, baos);
+            byte[] b = baos.toByteArray();
+            String encoded = Base64.encodeToString(b, Base64.DEFAULT);
+
+            // save image in shared preference
+            if (getActivity() != null) {
+                SharedPreferences sharedPreferences = getActivity().getApplicationContext().getSharedPreferences("image.public.profile_imgs", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+
+                editor.putString(adapter.users.get(position).getImg_file(), encoded);
+                editor.apply();
+            }
+
+            intent.putExtra("token", token);
+            intent.putExtra("user_id", adapter.users.get(position).getId());
+        }
+        startActivity(intent);
     }
 
     private class HTTPProcess extends AsyncTask<String, ConcurrentMap<String, Bitmap>, ConcurrentMap<String, Bitmap>> {
@@ -156,7 +190,9 @@ public class UsersProject extends Fragment implements RecyclerInterface {
                                     .append(". ")
                                     .append(StringEscapeUtils.unescapeJava(user.getString("oname")).charAt(0))
                                     .append(".").toString(),
-                            roleInProject
+                            roleInProject,
+                            user.getInt("user_id"),
+                            fileName
                     ));
 
 

@@ -48,6 +48,9 @@ public class Projects extends Fragment implements RecyclerInterface {
     private AA_RecyclerAdapter adapter;
     private Integer user_id;
 
+    public Projects () {
+
+    }
     public Projects(String token) {
         this.token = token;
     }

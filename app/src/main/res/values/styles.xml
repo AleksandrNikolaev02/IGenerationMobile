@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    Base.Theme.AppCompat.Light.DarkActionBar
+    <style name="ShapeAppearance.CircularBorder" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
 
 </resources>
