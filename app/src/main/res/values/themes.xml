@@ -2,7 +2,7 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.IGenerationMobile" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+         <item name="colorPrimary">@color/IGNColorBackground</item>
     </style>
 
     <style name="Theme.IGenerationMobile" parent="Base.Theme.IGenerationMobile" />

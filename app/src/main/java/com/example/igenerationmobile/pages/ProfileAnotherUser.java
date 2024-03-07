@@ -1,69 +1,146 @@
 package com.example.igenerationmobile.pages;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Base64;
+import android.widget.TextView;
 
 import com.example.igenerationmobile.R;
-import com.example.igenerationmobile.databinding.ActivityProfileAnotherUserBinding;
-import com.example.igenerationmobile.fragments.profileAnotherUser.AnotherProfile;
-import com.example.igenerationmobile.fragments.profileAnotherUser.AnotherResume;
+import com.example.igenerationmobile.http.HTTPMethods;
+import com.example.igenerationmobile.model.Token;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.android.material.imageview.ShapeableImageView;
+
+import org.apache.commons.text.StringEscapeUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 
 public class ProfileAnotherUser extends AppCompatActivity {
 
-    private String token;
+    private Token token;
     private Integer user_id;
+    private ShapeableImageView shapeableImageView;
+    private TextView fio;
+    private TextView rating;
+    private TextView countProjectsAnotherUser;
+    private final ObjectMapper mapper = new ObjectMapper();
 
-    private ActivityProfileAnotherUserBinding binding;
-
-    @SuppressLint("NonConstantResourceId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityProfileAnotherUserBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        setContentView(R.layout.activity_profile_another_user);
+
+        shapeableImageView = findViewById(R.id.ShapeableImageView);
+        fio = findViewById(R.id.name);
+        rating = findViewById(R.id.ratingAnotherUser);
+        countProjectsAnotherUser = findViewById(R.id.countProjectsAnotherUser);
 
         Bundle extras = getIntent().getExtras();
 
         if (extras != null) {
-            token = extras.getString("token");
+            try {
+                token = mapper.readValue(extras.getString("token"), Token.class);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
             user_id = extras.getInt("user_id");
-            //byte[] imageAsBytes = Base64.decode(codedImage.getBytes(), Base64.DEFAULT);
-            //avatar = BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length);
         }
 
-        ReplaceFragment(new AnotherProfile(token, user_id));
+        new HTTPProcess().execute();
+        new getCountProjects().execute();
+    }
 
-        binding.bottomNavigationView3.setOnItemSelectedListener(item -> {
-
-            switch (item.getItemId()) {
-                case R.id.anotherProfile:
-                    ReplaceFragment(new AnotherProfile(token, user_id));
-                    break;
-                case R.id.anotherResume:
-                    ReplaceFragment(new AnotherResume());
-                    break;
+    private class HTTPProcess extends AsyncTask<String, String, String> {
+        @Override
+        protected String doInBackground(String... strings) {
+            try {
+                return HTTPMethods.userID(token, user_id);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
+        }
 
-            return true;
-        });
+        @Override
+        protected void onPostExecute(String response) {
+            super.onPostExecute(response);
 
+            try {
+                JSONObject user = new JSONObject(response);
+
+                SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("image.public.profile_imgs", Context.MODE_PRIVATE);
+
+                String result = sharedPreferences.getString(user.getString("img_file"), "");
+
+                if (result.isEmpty()) {
+                    new HTTPImage().execute(user.getString("img_file"));
+                } else {
+                    byte[] imageAsBytes = Base64.decode(result.getBytes(), Base64.DEFAULT);
+                    shapeableImageView.setImageBitmap(BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length));
+                }
+
+                String builder = StringEscapeUtils.unescapeJava(user.getString("fname")) + " " +
+                        StringEscapeUtils.unescapeJava(user.getString("iname")) + " " +
+                        StringEscapeUtils.unescapeJava(user.getString("oname"));
+
+                fio.setText(builder);
+
+                String score = String.valueOf(user.getJSONObject("rating").getInt("achievements_sum"));
+
+                rating.setText(score);
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
-    private void ReplaceFragment(Fragment fragment) {
+    private class HTTPImage extends AsyncTask<String, Bitmap, Bitmap> {
+        @Override
+        protected Bitmap doInBackground(String... strings) {
+            if (strings[0].isEmpty()) {
+                return HTTPMethods.getDefaultImage();
+            }
+            return HTTPMethods.getImage(strings[0]);
+        }
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.frameLayoutAnotherUser, fragment);
-        fragmentTransaction.commit();
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            super.onPostExecute(bitmap);
+
+            shapeableImageView.setImageBitmap(bitmap);
+        }
     }
+
+    private class getCountProjects extends AsyncTask<String, String, String> {
+
+        @Override
+        protected String doInBackground(String... strings) {
+            try {
+                return HTTPMethods.cnt(token, user_id);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String response) {
+            super.onPostExecute(response);
+
+            try {
+                JSONObject cnt = new JSONObject(response);
+                countProjectsAnotherUser.setText(String.valueOf(cnt.getInt("cnt")));
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
 }

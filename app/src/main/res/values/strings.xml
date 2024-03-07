@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">IGenerationMobile</string>
     <string name="IGeneration">IGeneration</string>
-    <string name="profile">Profile</string>
+    <string name="profile">Профиль</string>
     <string name="empty_email">Поле email или логин не может быть пустым!</string>
     <string name="empty_password">Поле пароль не может быть пустым!</string>
     <string name="InputText">Введите email или логин</string>
@@ -11,6 +11,7 @@
     <string name="error_login">Не верный логин или пароль!</string>
     <string name="contentDescription">TODO</string>
     <string name="FIO">FIO</string>
+    <string name="CountProjects">Количество проектов</string>
 
     <!-- Меню -->
     <string name="profile1">Обзор</string>
