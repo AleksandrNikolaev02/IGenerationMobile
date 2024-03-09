@@ -26,6 +26,8 @@ public class MyProjectPage extends AppCompatActivity {
 
     private Integer author_id;
 
+    private Integer track_id;
+
     private ActivityMyProjectPageBinding binding;
 
     private Bitmap projectImage;
@@ -61,7 +63,9 @@ public class MyProjectPage extends AppCompatActivity {
                     ReplaceFragment(new UsersProject(token, project_id, author_id));
                     break;
                 case R.id.trajectoryProject:
-                    ReplaceFragment(new TrajectoryProject());
+                    SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("pages.my_project_page", Context.MODE_PRIVATE);
+                    track_id = sharedPreferences.getInt("track_id", -1);
+                    ReplaceFragment(new TrajectoryProject(token, project_id, track_id));
                     break;
             }
 

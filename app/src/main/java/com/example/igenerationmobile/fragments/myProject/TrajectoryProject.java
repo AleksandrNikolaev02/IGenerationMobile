@@ -1,5 +1,6 @@
 package com.example.igenerationmobile.fragments.myProject;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -7,60 +8,143 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ExpandableListView;
 
 import com.example.igenerationmobile.R;
+import com.example.igenerationmobile.adapters.StagesAdapter;
+import com.example.igenerationmobile.http.HTTPMethods;
+import com.example.igenerationmobile.model.ExpandableListModel.Stage;
+import com.example.igenerationmobile.model.Token;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link TrajectoryProject#newInstance} factory method to
- * create an instance of this fragment.
- */
+import org.apache.commons.text.StringEscapeUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class TrajectoryProject extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private ExpandableListView expandableListView;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private StagesAdapter adapter;
 
-    public TrajectoryProject() {
-        // Required empty public constructor
+    private Integer project_id;
+
+    private Integer track_id;
+
+    private String token;
+
+    private final ObjectMapper mapper = new ObjectMapper();
+
+    public TrajectoryProject(String token, Integer project_id, Integer track_id) {
+        this.token = token;
+        this.project_id = project_id;
+        this.track_id = track_id;
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment TrajectoryProject.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static TrajectoryProject newInstance(String param1, String param2) {
-        TrajectoryProject fragment = new TrajectoryProject();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+
+
+        new getSections().execute();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_trajectory_project, container, false);
+        View view = inflater.inflate(R.layout.fragment_trajectory_project, container, false);
+
+        expandableListView = view.findViewById(R.id.ExpandableListView);
+
+        return view;
+    }
+
+    private class getSections extends AsyncTask<String, String, String> {
+
+        @Override
+        protected String doInBackground(String... strings) {
+            try {
+                Token tokenObj = mapper.readValue(token, Token.class);
+                return HTTPMethods.sections(tokenObj, track_id, project_id);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String response) {
+            super.onPostExecute(response);
+
+            List<String> stages = new ArrayList<>();
+
+            Map<String, List<Stage>> childs = new HashMap<>();
+
+            try {
+                JSONArray jsonArray = new JSONArray(response);
+
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject section = jsonArray.getJSONObject(i);
+
+                    String stage = StringEscapeUtils.unescapeJava(section.getString("title"));
+                    int level = section.getInt("level");
+
+                    if (level == 0) {
+                        stages.add(stage);
+
+                        JSONArray criteria_rel = section.getJSONArray("criteria_rel");
+
+                        List<Stage> tmp = new ArrayList<>();
+                        for (int j = 0; j < criteria_rel.length(); j++) {
+                            JSONObject criteria = criteria_rel.getJSONObject(j);
+
+                            String title = StringEscapeUtils.unescapeJava(criteria.getString("title"));
+
+                            JSONArray rates = criteria.getJSONArray("rates");
+
+                            int value = 0;
+
+                            for (int x = 0; x < rates.length(); x++) {
+                                JSONObject rate = rates.getJSONObject(x);
+                                value += rate.getInt("value");
+                            }
+
+                            tmp.add(new Stage(title, (float) (value) / (float) rates.length()));
+                        }
+                        childs.put(stage, tmp);
+                    }
+                }
+
+                adapter = new StagesAdapter(getActivity().getApplicationContext(), stages, childs);
+
+                expandableListView.setAdapter(adapter);
+
+                expandableListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
+                    int lastExpandedPosition = -1;
+                    @Override
+                    public void onGroupExpand(int i) {
+                        if(lastExpandedPosition != -1 && i != lastExpandedPosition){
+                            expandableListView.collapseGroup(lastExpandedPosition);
+                        }
+                        lastExpandedPosition = i;
+                    }
+                });
+
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+
+        }
     }
 }

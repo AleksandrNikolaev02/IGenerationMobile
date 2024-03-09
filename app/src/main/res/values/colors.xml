@@ -8,4 +8,12 @@
     <color name="loginBackground">#FFFFFFFF</color>
     <color name="colorButtonLogin">#123357</color>
     <color name="colorHint">#A9A9A9</color>
+S
+    <!-- colors roles -->
+    <color name="participant">#666666</color>
+    <color name="mentor">#D0B050</color>
+    <color name="expert">#000000</color>
+    <color name="administrator">#BF281B</color>
+    <color name="customer">#360A2E</color>
+
 </resources>

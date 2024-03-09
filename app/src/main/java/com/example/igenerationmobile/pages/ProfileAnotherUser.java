@@ -1,5 +1,7 @@
 package com.example.igenerationmobile.pages;
 
+import static android.view.View.TEXT_ALIGNMENT_CENTER;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
@@ -32,6 +34,7 @@ public class ProfileAnotherUser extends AppCompatActivity {
     private TextView fio;
     private TextView rating;
     private TextView countProjectsAnotherUser;
+    private TextView IGNRole;
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Override
@@ -43,6 +46,7 @@ public class ProfileAnotherUser extends AppCompatActivity {
         fio = findViewById(R.id.name);
         rating = findViewById(R.id.ratingAnotherUser);
         countProjectsAnotherUser = findViewById(R.id.countProjectsAnotherUser);
+        IGNRole = findViewById(R.id.IGNRole);
 
         Bundle extras = getIntent().getExtras();
 
@@ -85,6 +89,36 @@ public class ProfileAnotherUser extends AppCompatActivity {
                 } else {
                     byte[] imageAsBytes = Base64.decode(result.getBytes(), Base64.DEFAULT);
                     shapeableImageView.setImageBitmap(BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length));
+                }
+
+                int status = user.getInt("status");
+
+                switch (status) {
+                    case 1:
+                        IGNRole.setText("Участник");
+                        IGNRole.setBackgroundColor(getColor(R.color.participant));
+                        IGNRole.setTextAlignment(TEXT_ALIGNMENT_CENTER);
+                        break;
+                    case 3:
+                        IGNRole.setText("Наставник");
+                        IGNRole.setBackgroundColor(getColor(R.color.mentor));
+                        break;
+                    case 4:
+                        IGNRole.setText("Эксперт");
+                        IGNRole.setBackgroundColor(getColor(R.color.expert));
+                        break;
+                    case 5:
+                        IGNRole.setText("Администратор");
+                        IGNRole.setBackgroundColor(getColor(R.color.administrator));
+                        break;
+                    case 7:
+                        IGNRole.setText("Заказчик");
+                        IGNRole.setBackgroundColor(getColor(R.color.customer));
+                        break;
+                    default:
+                        IGNRole.setText("Другой");
+                        IGNRole.setBackgroundColor(getColor(R.color.participant));
+                        break;
                 }
 
                 String builder = StringEscapeUtils.unescapeJava(user.getString("fname")) + " " +

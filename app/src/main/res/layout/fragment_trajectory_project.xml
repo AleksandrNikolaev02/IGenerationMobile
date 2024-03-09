@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.myProject.TrajectoryProject">
+    tools:context=".fragments.myProject.TrajectoryProject"
+    android:background="@color/white">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <ExpandableListView
+        android:id="@+id/ExpandableListView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="voshetilis" />
+        android:choiceMode="singleChoice"
+        android:dividerHeight="1dp">
 
-</FrameLayout>
+    </ExpandableListView>
+
+</RelativeLayout>

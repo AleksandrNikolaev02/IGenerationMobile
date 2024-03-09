@@ -1,5 +1,7 @@
 package com.example.igenerationmobile.fragments.myProject;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -7,6 +9,7 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -17,6 +20,7 @@ import com.example.igenerationmobile.http.HTTPMethods;
 import com.example.igenerationmobile.model.ProjectID;
 import com.example.igenerationmobile.model.Token;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 
 import java.io.IOException;
@@ -32,6 +36,7 @@ public class ViewProject extends Fragment {
     private TextView Place;
 
     private TextView Rating;
+    private BottomNavigationView bottomNavigationView;
 
     private String token;
 
@@ -62,6 +67,9 @@ public class ViewProject extends Fragment {
         Created = view.findViewById(R.id.Created);
         Place = view.findViewById(R.id.Place);
         Rating = view.findViewById(R.id.Rating);
+        if (getActivity() != null) {
+            bottomNavigationView = getActivity().findViewById(R.id.bottomNavigationView2);
+        }
 
         projectImage.setImageBitmap(image);
 
@@ -91,6 +99,22 @@ public class ViewProject extends Fragment {
                 Rating.setText(project.getTracks_title().isEmpty() ? "-" :
                         (double) project.getTracks_title().get(0).getRating() / 10.0 +
                         " - по траектории " + project.getTracks_title().get(0).getTitle());
+
+                if (!project.getTracks_title().isEmpty()) {
+                    MenuItem trajectory = bottomNavigationView.getMenu().findItem(R.id.trajectoryProject);
+
+                    trajectory.setTitle(project.getTracks_title().get(0).getTitle());
+                }
+
+                // save track_id
+                if (getActivity() != null) {
+                    SharedPreferences sharedPreferences = getActivity().getApplicationContext().getSharedPreferences("pages.my_project_page", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+
+                    editor.putInt("track_id", project.getTracks_title().get(0).getTrack_id());
+                    editor.putInt("project_id", project.getProject_id());
+                    editor.apply();
+                }
 
             } catch (IOException e) {
                 throw new RuntimeException(e);
