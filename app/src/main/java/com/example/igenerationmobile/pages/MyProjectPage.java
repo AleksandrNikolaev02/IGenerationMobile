@@ -14,6 +14,7 @@ import android.util.Base64;
 
 import com.example.igenerationmobile.R;
 import com.example.igenerationmobile.databinding.ActivityMyProjectPageBinding;
+import com.example.igenerationmobile.fragments.myProject.EmptyProject;
 import com.example.igenerationmobile.fragments.myProject.TrajectoryProject;
 import com.example.igenerationmobile.fragments.myProject.UsersProject;
 import com.example.igenerationmobile.fragments.myProject.ViewProject;
@@ -65,7 +66,11 @@ public class MyProjectPage extends AppCompatActivity {
                 case R.id.trajectoryProject:
                     SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("pages.my_project_page", Context.MODE_PRIVATE);
                     track_id = sharedPreferences.getInt("track_id", -1);
-                    ReplaceFragment(new TrajectoryProject(token, project_id, track_id));
+                    if (track_id == -1) {
+                        ReplaceFragment(new EmptyProject());
+                    } else {
+                        ReplaceFragment(new TrajectoryProject(token, project_id, track_id));
+                    }
                     break;
             }
 

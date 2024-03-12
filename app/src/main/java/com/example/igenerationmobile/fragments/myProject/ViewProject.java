@@ -111,7 +111,7 @@ public class ViewProject extends Fragment {
                     SharedPreferences sharedPreferences = getActivity().getApplicationContext().getSharedPreferences("pages.my_project_page", Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
 
-                    editor.putInt("track_id", project.getTracks_title().get(0).getTrack_id());
+                    editor.putInt("track_id", project.getTracks_title().isEmpty() ? -1 : project.getTracks_title().get(0).getTrack_id());
                     editor.putInt("project_id", project.getProject_id());
                     editor.apply();
                 }

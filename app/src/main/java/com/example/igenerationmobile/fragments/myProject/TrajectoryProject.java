@@ -15,7 +15,6 @@ import com.example.igenerationmobile.adapters.StagesAdapter;
 import com.example.igenerationmobile.http.HTTPMethods;
 import com.example.igenerationmobile.model.ExpandableListModel.Stage;
 import com.example.igenerationmobile.model.Token;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.apache.commons.text.StringEscapeUtils;
@@ -25,8 +24,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

@@ -67,6 +67,9 @@ public class MainActivity extends AppCompatActivity {
             if (!isProcessed) {
                 isProcessed = true;
 
+                SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("Params", Context.MODE_PRIVATE);
+                System.out.println(sharedPreferences.getInt("user_id", -10000));
+
                 if (result.equals("Unauthorized")) {
                     System.out.println("Unauthorized");
                     Toast.makeText(MainActivity.this, R.string.error_login, Toast.LENGTH_LONG).show();
