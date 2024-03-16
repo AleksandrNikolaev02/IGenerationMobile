@@ -5,6 +5,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import com.example.igenerationmobile.R;
@@ -27,11 +29,8 @@ public class ProfileNew extends AppCompatActivity {
         binding = ActivityProfileNewBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        Bundle extras = getIntent().getExtras();
-
-        if (extras != null) {
-            token = extras.getString("token");
-        }
+        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("UserData", Context.MODE_PRIVATE);
+        token = sharedPreferences.getString("token", "");
 
         ReplaceFragment(new Profile(token));
 

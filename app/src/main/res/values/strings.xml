@@ -29,9 +29,7 @@
     <string name="viewingMode">Режим просмотра</string>
 
     <!-- Проекты -->
-    <string-array name="dates">
-        <item>2019 осень</item>
-        <item>2019 зима</item>
+    <string-array name="sessions">
         <item>2020 весна</item>
         <item>2020 осень</item>
         <item>2021 весна</item>
@@ -54,4 +52,8 @@
     <string name="ratingProject">Рейтинг</string>
 
 
+    <!-- Меню основной страницы (MainPage) -->
+    <string name="allProjects">Проекты</string>
+    <string name="allUsers">Участники</string>
+    <string name="yourProfile">Профиль</string>
 </resources>

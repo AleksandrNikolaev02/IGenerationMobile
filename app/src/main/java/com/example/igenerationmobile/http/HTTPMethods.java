@@ -24,9 +24,9 @@ import java.util.Locale;
 import java.util.zip.GZIPInputStream;
 
 public class HTTPMethods {
-    private static final String urlApi = "https://innostor.unn.ru/api";
+    public static final String urlApi = "https://innostor.unn.ru/api";
 
-    private static final String urlIGN = "https://i-generation.unn.ru/static";
+    public static final String urlIGN = "https://i-generation.unn.ru/static";
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -535,6 +535,69 @@ public class HTTPMethods {
         return response.toString();
     }
 
+    public static String projects(Token token, String session) throws IOException {
+        URL url = new URL(urlApi + "/projects");
+
+        String[] tokens = session.split(" ");
+
+        String year = tokens[0];
+        String month = tokens[1];
+
+        StringBuilder from = new StringBuilder();
+        StringBuilder to = new StringBuilder();
+
+        if (month.equals("весна")) {
+            from.append(year).append("-").append("01").append("-").append("01");
+            to.append(year).append("-").append("07").append("-").append("31");
+        } else if (month.equals("осень")) {
+            from.append(year).append("-").append("08").append("-").append("01");
+            to.append(year).append("-").append("12").append("-").append("31");
+        }
+
+        String request = String.format(Locale.US,"{\"project_id\":1,\"from\":\"%s\",\"to\":\"%s\"}", from, to);
+
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("POST");
+        connection.setRequestProperty("Accept", "application/json, text/plain, */*");
+        connection.setRequestProperty("Accept-Encoding", "gzip, deflate, br");
+        connection.setRequestProperty("Accept-Language", "ru,en;q=0.9,en-GB;q=0.8,en-US;q=0.7");
+        connection.setRequestProperty("Authorization", token.getTokenType() + " " + token.getAccessToken());
+        connection.setRequestProperty("Connection", "keep-alive");
+        connection.setRequestProperty("Content-Length", String.valueOf(request.length()));
+        connection.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
+        connection.setRequestProperty("Host", "innostor.unn.ru");
+
+        connection.setDoOutput(true);
+
+        OutputStreamWriter outputStreamWriter = new OutputStreamWriter(connection.getOutputStream());
+
+        outputStreamWriter.write(request);
+        outputStreamWriter.flush();
+        outputStreamWriter.close();
+
+        connection.connect();
+
+        System.out.println(connection.getResponseCode());
+
+        if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) return connection.getResponseMessage();
+
+        InputStream inputStream = new GZIPInputStream(connection.getInputStream());
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+        String line;
+        StringBuilder response = new StringBuilder();
+
+
+        while ((line = reader.readLine()) != null) {
+            response.append(line).append("\n");
+        }
+
+        connection.disconnect();
+        reader.close();
+
+        return response.toString();
+    }
+
 
     public static Bitmap getImage(String nameFile) {
         Bitmap bm = null;
@@ -557,6 +620,23 @@ public class HTTPMethods {
         Bitmap bm = null;
         try {
             URL url = new URL(urlIGN + "/img/avatar_00.png");
+            URLConnection connection = url.openConnection();
+            connection.connect();
+            InputStream is = connection.getInputStream();
+            BufferedInputStream bis = new BufferedInputStream(is);
+            bm = BitmapFactory.decodeStream(bis);
+            bis.close();
+            is.close();
+        } catch (IOException e) {
+            Log.e(TAG, "Error getting bitmap", e);
+        }
+        return bm;
+    }
+
+    public static Bitmap getDefaultProjectImage() {
+        Bitmap bm = null;
+        try {
+            URL url = new URL(urlIGN + "/img/no_icon.png");
             URLConnection connection = url.openConnection();
             connection.connect();
             InputStream is = connection.getInputStream();

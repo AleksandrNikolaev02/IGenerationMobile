@@ -16,7 +16,7 @@ import com.example.igenerationmobile.http.HTTPMethods;
 
 import java.io.IOException;
 
-public class MainActivity extends AppCompatActivity {
+public class LoginPage extends AppCompatActivity {
 
     private Button loginButton;
     private EditText emailField;
@@ -34,9 +34,9 @@ public class MainActivity extends AppCompatActivity {
 
         loginButton.setOnClickListener(v -> {
             if (emailField.getText().toString().isEmpty()) {
-                Toast.makeText(MainActivity.this, R.string.empty_email, Toast.LENGTH_LONG).show();
+                Toast.makeText(LoginPage.this, R.string.empty_email, Toast.LENGTH_LONG).show();
             } else if (passwordField.getText().toString().isEmpty()) {
-                Toast.makeText(MainActivity.this, R.string.empty_password, Toast.LENGTH_LONG).show();
+                Toast.makeText(LoginPage.this, R.string.empty_password, Toast.LENGTH_LONG).show();
             } else {
                 String email = emailField.getText().toString();
                 String password = passwordField.getText().toString();
@@ -61,23 +61,24 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
+        protected void onPostExecute(String token) {
+            super.onPostExecute(token);
 
             if (!isProcessed) {
                 isProcessed = true;
 
-                SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("Params", Context.MODE_PRIVATE);
-                System.out.println(sharedPreferences.getInt("user_id", -10000));
-
-                if (result.equals("Unauthorized")) {
+                if (token.equals("Unauthorized")) {
                     System.out.println("Unauthorized");
-                    Toast.makeText(MainActivity.this, R.string.error_login, Toast.LENGTH_LONG).show();
+                    Toast.makeText(LoginPage.this, R.string.error_login, Toast.LENGTH_LONG).show();
                 } else {
-                    Intent intent = new Intent(MainActivity.this, ProfileNew.class);
+                    Intent intent = new Intent(LoginPage.this, MainPage.class);
                     System.out.println("Authorised");
-                    System.out.println(result);
-                    intent.putExtra("token", result);
+
+                    SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("UserData", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString("token", token);
+                    editor.apply();
+
                     startActivity(intent);
                 }
 
