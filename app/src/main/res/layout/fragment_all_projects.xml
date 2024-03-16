@@ -23,6 +23,17 @@
                 />
         </androidx.cardview.widget.CardView>
 
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Spinner
+                android:id="@+id/spinnerTrajectory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+        </androidx.cardview.widget.CardView>
+
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/allProjectRecyclerView"

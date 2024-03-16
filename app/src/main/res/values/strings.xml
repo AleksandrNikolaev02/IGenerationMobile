@@ -41,6 +41,16 @@
         <item>2024 весна</item>
     </string-array>
 
+    <!-- Траектории -->
+    <string-array name="trajectory">
+        <item>Социальный бизнес</item>
+        <item>Малый бизнес</item>
+        <item>Инновационный бизнес</item>
+        <item>Креативные индустрии</item>
+        <item>«Я — наставник проекта»</item>
+        <item>Акселератор «Импульс»</item>
+    </string-array>
+
     <!-- Меню проекта -->
     <string name="viewProject">Обзор</string>
     <string name="usersProject">Участники</string>

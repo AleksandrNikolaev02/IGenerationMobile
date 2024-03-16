@@ -44,11 +44,14 @@ public class AllProjects extends Fragment implements RecyclerInterface {
     private RecyclerView recyclerView;
 
     private Spinner sessions;
+    private Spinner trajectory;
     private String defaultSession;
+    private String defaultTrajectory;
 
     private AllProjectsAdapter adapter;
 
     private ArrayAdapter<CharSequence> sessionAdapter;
+    private ArrayAdapter<CharSequence> trajectoryAdapter;
 
     private ProgressBar loadingPB;
     private NestedScrollView nestedSV;
@@ -84,12 +87,14 @@ public class AllProjects extends Fragment implements RecyclerInterface {
         }
 
         defaultSession = getResources().getStringArray(R.array.sessions)[getResources().getStringArray(R.array.sessions).length - 1];
+        defaultTrajectory = "";
 
         // init out views
         recyclerView = view.findViewById(R.id.allProjectRecyclerView);
         loadingPB = view.findViewById(R.id.idPBLoading);
         nestedSV = view.findViewById(R.id.idNestedSV);
         sessions = view.findViewById(R.id.spinner);
+        trajectory = view.findViewById(R.id.spinnerTrajectory);
 
 
         adapter = new AllProjectsAdapter(getActivity(), this);
@@ -97,9 +102,16 @@ public class AllProjects extends Fragment implements RecyclerInterface {
                 R.array.sessions, android.R.layout.simple_spinner_item);
         sessionAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
+        trajectoryAdapter = ArrayAdapter.createFromResource(getActivity(),
+                R.array.trajectory, android.R.layout.simple_spinner_item);
+        trajectoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        trajectory.setAdapter(trajectoryAdapter);
         sessions.setAdapter(sessionAdapter);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        sessions.setSelection(sessionAdapter.getCount() - 1);
 
         sessions.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -113,6 +125,18 @@ public class AllProjects extends Fragment implements RecyclerInterface {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
+        });
+
+        trajectory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
         });
 
 
