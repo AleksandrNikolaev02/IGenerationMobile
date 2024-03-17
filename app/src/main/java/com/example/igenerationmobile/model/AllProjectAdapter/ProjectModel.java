@@ -8,10 +8,13 @@ public class ProjectModel {
 
     private String projectName;
 
-    public ProjectModel(String projectImageURL, int rating, String projectName) {
+    private String title;
+
+    public ProjectModel(String projectImageURL, int rating, String projectName, String title) {
         this.projectImageURL = projectImageURL;
         this.rating = rating;
         this.projectName = projectName;
+        this.title = title;
     }
 
     public String getProjectImage() {
@@ -36,5 +39,21 @@ public class ProjectModel {
 
     public void setProjectName(String projectName) {
         this.projectName = projectName;
+    }
+
+    public String getProjectImageURL() {
+        return projectImageURL;
+    }
+
+    public void setProjectImageURL(String projectImageURL) {
+        this.projectImageURL = projectImageURL;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }

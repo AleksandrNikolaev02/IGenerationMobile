@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.example.igenerationmobile.R;
 import com.example.igenerationmobile.adapters.AllProjectsAdapter;
@@ -87,7 +89,7 @@ public class AllProjects extends Fragment implements RecyclerInterface {
         }
 
         defaultSession = getResources().getStringArray(R.array.sessions)[getResources().getStringArray(R.array.sessions).length - 1];
-        defaultTrajectory = "";
+        defaultTrajectory = "Не выбрано";
 
         // init out views
         recyclerView = view.findViewById(R.id.allProjectRecyclerView);
@@ -130,7 +132,11 @@ public class AllProjects extends Fragment implements RecyclerInterface {
         trajectory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
+                defaultTrajectory = (String) parent.getItemAtPosition(position);
+                allProjects.clear();
+                adapter.projects.clear();
+                adapter.notifyDataSetChanged();
+                new getAllProjects().execute();
             }
 
             @Override
@@ -172,12 +178,26 @@ public class AllProjects extends Fragment implements RecyclerInterface {
                     String img_file = project.getString("img_file");
 
                     if (project.getJSONArray("tracks_title").length() > 0) {
-                        allProjects.add(new ProjectModel(
-                                img_file.isEmpty() ? HTTPMethods.urlIGN + "/img/no_icon.png" :
-                                        HTTPMethods.urlApi + "/image/" + img_file.replaceAll("\\\\/", "/"),
-                                project.getJSONArray("tracks_title").getJSONObject(0).getInt("rating"),
-                                StringEscapeUtils.unescapeJava(project.getString("title"))
-                        ));
+                        String projectImageURL = img_file.isEmpty() ? HTTPMethods.urlIGN + "/img/no_icon.png" :
+                                HTTPMethods.urlApi + "/image/" + img_file.replaceAll("\\\\/", "/");
+                        if (defaultTrajectory.equals("Не выбрано")) {
+                            allProjects.add(new ProjectModel(
+                                    projectImageURL,
+                                    project.getJSONArray("tracks_title").getJSONObject(0).getInt("rating"),
+                                    StringEscapeUtils.unescapeJava(project.getString("title")),
+                                    project.getJSONArray("tracks_title").getJSONObject(0).getString("title")
+                            ));    
+                        } else {
+                            if (defaultTrajectory.equals(StringEscapeUtils.unescapeJava(project.getJSONArray("tracks_title").getJSONObject(0).getString("title")))) {
+                                allProjects.add(new ProjectModel(
+                                        projectImageURL,
+                                        project.getJSONArray("tracks_title").getJSONObject(0).getInt("rating"),
+                                        StringEscapeUtils.unescapeJava(project.getString("title")),
+                                        project.getJSONArray("tracks_title").getJSONObject(0).getString("title")
+                                ));
+                            }
+                        }
+                        
                     }
 
                 }
@@ -195,17 +215,20 @@ public class AllProjects extends Fragment implements RecyclerInterface {
 
 
             } catch (JSONException e) {
-                throw new RuntimeException(e);
+                Log.e("TAG", "Ошибка при обработке JSON", e);
+                Toast.makeText(getActivity(), "Ошибка при обработке данных. Пожалуйста, попробуйте еще раз.", Toast.LENGTH_LONG).show();
             }
 
         }
 
-        private void loadMoreProjects() {
-            int index = adapter.getItemCount();
-            int end = Math.min(index + limit, allProjects.size());
-            for (int i = index; i < end; i++) {
-                adapter.projects.add(allProjects.get(i));
-                adapter.notifyItemInserted(i);
+        public void loadMoreProjects() {
+            if (adapter.getItemCount() < allProjects.size()) {
+                int index = adapter.getItemCount();
+                int end = Math.min(index + limit, allProjects.size());
+                for (int i = index; i < end; i++) {
+                    adapter.projects.add(allProjects.get(i));
+                    adapter.notifyItemInserted(i);
+                }
             }
         }
     }

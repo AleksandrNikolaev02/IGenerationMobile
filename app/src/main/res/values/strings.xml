@@ -43,6 +43,7 @@
 
     <!-- Траектории -->
     <string-array name="trajectory">
+        <item>Не выбрано</item>
         <item>Социальный бизнес</item>
         <item>Малый бизнес</item>
         <item>Инновационный бизнес</item>
