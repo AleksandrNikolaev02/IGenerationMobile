@@ -1,5 +1,7 @@
 package com.example.igenerationmobile.fragments.mainPage;
 
+import static android.view.View.TEXT_ALIGNMENT_CENTER;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -10,6 +12,7 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,11 +22,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.caverock.androidsvg.SVG;
@@ -40,7 +40,6 @@ import com.google.android.material.imageview.ShapeableImageView;
 import com.squareup.picasso.Picasso;
 
 import org.apache.commons.text.StringEscapeUtils;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -96,10 +95,6 @@ public class YourProfile extends Fragment {
         countProjectsUser = view.findViewById(R.id.countProjectsUser);
         horizontalScrollView = view.findViewById(R.id.horizontal_scroll_view_id);
 
-        horizontalScrollView.setOnClickListener(l -> {
-            System.out.println(l.getId());
-        });
-
 
         new getCnt().execute();
 
@@ -134,6 +129,35 @@ public class YourProfile extends Fragment {
                         name.setText(nameUser);
                         ratingUser.setText(String.valueOf(user.getJSONObject("rating").getInt("achievements_sum")));
 
+                        int status = user.getInt("status");
+
+                        switch (status) {
+                            case 1:
+                                IGNRole.setText("Участник");
+                                IGNRole.setBackgroundColor(getActivity().getColor(R.color.participant));
+                                IGNRole.setTextAlignment(TEXT_ALIGNMENT_CENTER);
+                                break;
+                            case 3:
+                                IGNRole.setText("Наставник");
+                                IGNRole.setBackgroundColor(getActivity().getColor(R.color.mentor));
+                                break;
+                            case 4:
+                                IGNRole.setText("Эксперт");
+                                IGNRole.setBackgroundColor(getActivity().getColor(R.color.expert));
+                                break;
+                            case 5:
+                                IGNRole.setText("Администратор");
+                                IGNRole.setBackgroundColor(getActivity().getColor(R.color.administrator));
+                                break;
+                            case 7:
+                                IGNRole.setText("Заказчик");
+                                IGNRole.setBackgroundColor(getActivity().getColor(R.color.customer));
+                                break;
+                            default:
+                                IGNRole.setText("Другой");
+                                IGNRole.setBackgroundColor(getActivity().getColor(R.color.participant));
+                                break;
+                        }
 
                     } catch (JSONException e) {
                         throw new RuntimeException(e);
@@ -221,17 +245,17 @@ public class YourProfile extends Fragment {
                 ImageView image = new ImageView(getActivity());
                 Bitmap bitmap = getBitmapFromSvgData(entry.getValue());
                 image.setImageBitmap(bitmap);
+
+                image.setOnClickListener(l -> {
+                    System.out.println(l.getId());
+                });
+
                 LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(200, 200);
+                int rightMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, getResources().getDisplayMetrics());
+                layoutParams.setMargins(0, 0, rightMargin, 0);
+
                 image.setLayoutParams(layoutParams);
                 image.setBackgroundColor(Color.parseColor(entry.getKey().getColor()));
-
-//                TextView value = new TextView(getActivity());
-//                value.setText(String.valueOf(entry.getKey().getValue()));
-//
-//                TextView name = new TextView(getActivity());
-//                name.setText(StringEscapeUtils.unescapeJava(entry.getKey().getName()));
-//                name.setTextColor(Color.parseColor("#ffffff"));
-
 
                 imageContainer.addView(image);
             }
