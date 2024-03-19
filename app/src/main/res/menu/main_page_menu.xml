@@ -6,13 +6,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:title="@string/allProjects"
-        android:icon="@drawable/users_project"/>
+        android:icon="@drawable/projects"/>
     <item
         android:id="@+id/allUsers"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:title="@string/allUsers"
-        android:icon="@drawable/projects"/>
+        android:icon="@drawable/users_project"/>
     <item
         android:id="@+id/yourProfile"
         android:layout_width="wrap_content"

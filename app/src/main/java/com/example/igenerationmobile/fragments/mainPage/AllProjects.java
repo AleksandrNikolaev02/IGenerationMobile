@@ -24,7 +24,7 @@ import com.example.igenerationmobile.R;
 import com.example.igenerationmobile.adapters.AllProjectsAdapter;
 import com.example.igenerationmobile.http.HTTPMethods;
 import com.example.igenerationmobile.interfaces.RecyclerInterface;
-import com.example.igenerationmobile.model.AllProjectAdapter.ProjectModel;
+import com.example.igenerationmobile.model.AllProjectAdapterModel.ProjectModel;
 import com.example.igenerationmobile.model.Token;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -57,14 +57,11 @@ public class AllProjects extends Fragment implements RecyclerInterface {
 
     private ProgressBar loadingPB;
     private NestedScrollView nestedSV;
-    private ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
 
     List<ProjectModel> allProjects = new ArrayList<>();
-
     private final int limit = 10;
-    public AllProjects() {
-        // Required empty public constructor
-    }
+    public AllProjects() {}
 
 
     @Override
@@ -145,7 +142,6 @@ public class AllProjects extends Fragment implements RecyclerInterface {
             }
         });
 
-
         new getAllProjects().execute();
 
         return view;
@@ -185,7 +181,8 @@ public class AllProjects extends Fragment implements RecyclerInterface {
                                     projectImageURL,
                                     project.getJSONArray("tracks_title").getJSONObject(0).getInt("rating"),
                                     StringEscapeUtils.unescapeJava(project.getString("title")),
-                                    project.getJSONArray("tracks_title").getJSONObject(0).getString("title")
+                                    project.getJSONArray("tracks_title").getJSONObject(0).getString("title"),
+                                    project.getInt("id")
                             ));    
                         } else {
                             if (defaultTrajectory.equals(StringEscapeUtils.unescapeJava(project.getJSONArray("tracks_title").getJSONObject(0).getString("title")))) {
@@ -193,7 +190,8 @@ public class AllProjects extends Fragment implements RecyclerInterface {
                                         projectImageURL,
                                         project.getJSONArray("tracks_title").getJSONObject(0).getInt("rating"),
                                         StringEscapeUtils.unescapeJava(project.getString("title")),
-                                        project.getJSONArray("tracks_title").getJSONObject(0).getString("title")
+                                        project.getJSONArray("tracks_title").getJSONObject(0).getString("title"),
+                                        project.getInt("id")
                                 ));
                             }
                         }
@@ -215,7 +213,7 @@ public class AllProjects extends Fragment implements RecyclerInterface {
 
 
             } catch (JSONException e) {
-                Log.e("TAG", "Ошибка при обработке JSON", e);
+                Log.e("ParseJSON", "Ошибка при обработке JSON", e);
                 Toast.makeText(getActivity(), "Ошибка при обработке данных. Пожалуйста, попробуйте еще раз.", Toast.LENGTH_LONG).show();
             }
 

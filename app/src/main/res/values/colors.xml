@@ -3,6 +3,7 @@
     <color name="blue">#3579F5</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="grey">#a69797</color>
     <color name="IGNColor">#FFFFFFFF</color>
     <color name="IGNColorBackground">#1C487B</color>
     <color name="loginBackground">#FFFFFFFF</color>

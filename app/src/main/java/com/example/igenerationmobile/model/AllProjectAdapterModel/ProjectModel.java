@@ -1,4 +1,4 @@
-package com.example.igenerationmobile.model.AllProjectAdapter;
+package com.example.igenerationmobile.model.AllProjectAdapterModel;
 
 public class ProjectModel {
 
@@ -10,11 +10,14 @@ public class ProjectModel {
 
     private String title;
 
-    public ProjectModel(String projectImageURL, int rating, String projectName, String title) {
+    private int project_id;
+
+    public ProjectModel(String projectImageURL, int rating, String projectName, String title, int project_id) {
         this.projectImageURL = projectImageURL;
         this.rating = rating;
         this.projectName = projectName;
         this.title = title;
+        this.project_id = project_id;
     }
 
     public String getProjectImage() {
@@ -55,5 +58,13 @@ public class ProjectModel {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public int getProject_id() {
+        return project_id;
+    }
+
+    public void setProject_id(int project_id) {
+        this.project_id = project_id;
     }
 }

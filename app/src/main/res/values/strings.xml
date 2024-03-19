@@ -19,6 +19,7 @@
     <string name="rating">Рейтинг</string>
     <string name="options">Настройки</string>
     <string name="projects">Проекты</string>
+    <string name="notifications">Уведомления</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 

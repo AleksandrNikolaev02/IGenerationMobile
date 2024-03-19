@@ -1,5 +1,11 @@
 package com.example.igenerationmobile.fragments.mainPage;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -7,60 +13,243 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.HorizontalScrollView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.caverock.androidsvg.SVG;
+import com.caverock.androidsvg.SVGParseException;
 import com.example.igenerationmobile.R;
+import com.example.igenerationmobile.http.HTTPMethods;
+import com.example.igenerationmobile.model.Achievement;
+import com.example.igenerationmobile.model.MyAchievement;
+import com.example.igenerationmobile.model.Token;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.android.material.imageview.ShapeableImageView;
+import com.squareup.picasso.Picasso;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link YourProfile#newInstance} factory method to
- * create an instance of this fragment.
- */
+import org.apache.commons.text.StringEscapeUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class YourProfile extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private ShapeableImageView avatar;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private HorizontalScrollView horizontalScrollView;
+    private TextView name;
+    private TextView IGNRole;
+    private TextView ratingUser;
+    private TextView countProjectsUser;
+
+    private Token token;
+    private int user_id;
+    private final ObjectMapper mapper = new ObjectMapper();
 
     public YourProfile() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment YourProfile.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static YourProfile newInstance(String param1, String param2) {
-        YourProfile fragment = new YourProfile();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_your_profile, container, false);
+        View view  = inflater.inflate(R.layout.fragment_your_profile, container, false);
+
+        if (getActivity() != null) {
+            SharedPreferences sharedPreferences = getActivity().getApplicationContext().getSharedPreferences("UserData", Context.MODE_PRIVATE);
+            try {
+                token = mapper.readValue(sharedPreferences.getString("token", ""), Token.class);
+                user_id = sharedPreferences.getInt("id", -1);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        avatar = view.findViewById(R.id.ShapeableImageView);
+        name = view.findViewById(R.id.name);
+        IGNRole = view.findViewById(R.id.IGNRole);
+        ratingUser = view.findViewById(R.id.ratingUser);
+        countProjectsUser = view.findViewById(R.id.countProjectsUser);
+        horizontalScrollView = view.findViewById(R.id.horizontal_scroll_view_id);
+
+        horizontalScrollView.setOnClickListener(l -> {
+            System.out.println(l.getId());
+        });
+
+
+        new getCnt().execute();
+
+        new getAchivments().execute();
+
+        RequestQueue queue = Volley.newRequestQueue(getActivity());
+
+        String url = HTTPMethods.urlApi + "/user";
+
+        JSONObject jsonBody = new JSONObject();
+        try {
+            jsonBody.put("project_id", 1);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        JsonObjectRequest postRequest = new JsonObjectRequest(Request.Method.POST, url, jsonBody,
+                user -> {
+                    try {
+                        String imagePath = user.getString("img_file");
+
+                        Picasso.get()
+                                .load(imagePath.isEmpty() ? HTTPMethods.urlIGN + "/img/avatar_00.png" :
+                                        HTTPMethods.urlApi + "/image/" + imagePath.replaceAll("\\\\/", "/"))
+                                .placeholder(R.drawable.loading_animation_profile)
+                                .fit()
+                                .centerInside()
+                                .into(avatar);
+
+                        String nameUser = StringEscapeUtils.unescapeJava(user.getString("fname")) + " " +
+                                StringEscapeUtils.unescapeJava(user.getString("iname")) + " " +
+                                StringEscapeUtils.unescapeJava(user.getString("oname"));
+                        name.setText(nameUser);
+                        ratingUser.setText(String.valueOf(user.getJSONObject("rating").getInt("achievements_sum")));
+
+
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+                },
+                error -> Toast.makeText(getActivity(), "Fail to get data..", Toast.LENGTH_SHORT).show()
+        ) {
+
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Authorization", token.getTokenType() + " " + token.getAccessToken());
+                return headers;
+            }
+        };
+
+        queue.add(postRequest);
+
+        return view;
+    }
+
+    private class getCnt extends AsyncTask<String, String, String> {
+        @Override
+        protected String doInBackground(String... strings) {
+            try {
+                return HTTPMethods.cnt(token, user_id);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String response) {
+            super.onPostExecute(response);
+
+            try {
+                JSONObject json = new JSONObject(response);
+
+                countProjectsUser.setText(String.valueOf(json.getInt("cnt")));
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private class getAchivments extends AsyncTask<String, String, HashMap<Achievement, String>> {
+
+
+        @Override
+        protected HashMap<Achievement, String> doInBackground(String... strings) {
+            try {
+                String response = HTTPMethods.myAchievements(token);
+                List<MyAchievement> myAchievements = mapper.readValue(response, new TypeReference<>() {});
+
+                if (myAchievements.isEmpty()) return new HashMap<>();
+                else {
+                    String allAchievements = HTTPMethods.achievements(token);
+
+                    HashMap<Achievement, String> result = new HashMap<>();
+                    List<Achievement> achievements = mapper.readValue(allAchievements, new TypeReference<>() {});
+
+                    for (MyAchievement myAchievement : myAchievements) {
+                        for (Achievement achievement : achievements) {
+                            if (myAchievement.getAchievementId() == achievement.getId()) {
+                                result.put(achievement, HTTPMethods.getSVGImage(achievement.getIcon()));
+                            }
+                        }
+                    }
+
+                    return result;
+                }
+
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        @Override
+        protected void onPostExecute(HashMap<Achievement, String> strings) {
+            super.onPostExecute(strings);
+            LinearLayout imageContainer = getActivity().findViewById(R.id.linear_layout_id);
+
+            for (Map.Entry<Achievement, String> entry : strings.entrySet()) {
+
+                ImageView image = new ImageView(getActivity());
+                Bitmap bitmap = getBitmapFromSvgData(entry.getValue());
+                image.setImageBitmap(bitmap);
+                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(200, 200);
+                image.setLayoutParams(layoutParams);
+                image.setBackgroundColor(Color.parseColor(entry.getKey().getColor()));
+
+//                TextView value = new TextView(getActivity());
+//                value.setText(String.valueOf(entry.getKey().getValue()));
+//
+//                TextView name = new TextView(getActivity());
+//                name.setText(StringEscapeUtils.unescapeJava(entry.getKey().getName()));
+//                name.setTextColor(Color.parseColor("#ffffff"));
+
+
+                imageContainer.addView(image);
+            }
+        }
+
+        public Bitmap getBitmapFromSvgData(String svgData) {
+            try {
+                SVG svg = SVG.getFromString(svgData);
+
+                Bitmap bitmap = Bitmap.createBitmap((int) svg.getDocumentWidth(), (int) svg.getDocumentHeight(), Bitmap.Config.ARGB_8888);
+                Canvas canvas = new Canvas(bitmap);
+                svg.renderToCanvas(canvas);
+
+                return bitmap;
+            } catch (SVGParseException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
     }
 }

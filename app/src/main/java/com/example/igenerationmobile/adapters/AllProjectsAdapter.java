@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.igenerationmobile.R;
 import com.example.igenerationmobile.interfaces.RecyclerInterface;
-import com.example.igenerationmobile.model.AllProjectAdapter.ProjectModel;
+import com.example.igenerationmobile.model.AllProjectAdapterModel.ProjectModel;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;

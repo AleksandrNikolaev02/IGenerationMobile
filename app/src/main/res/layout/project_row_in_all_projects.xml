@@ -25,16 +25,19 @@
 
             <TextView
                 android:id="@+id/projectName"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="Name Project"
                 android:textColor="@color/black"
                 app:layout_constraintStart_toEndOf="@+id/imageProject"
+                app:layout_constraintEnd_toStartOf="@+id/projectRating"
                 app:layout_constraintTop_toTopOf="parent"
                 />
 
+
             <TextView
                 android:id="@+id/projectRating"
+                android:layout_marginEnd="10dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/rating"
