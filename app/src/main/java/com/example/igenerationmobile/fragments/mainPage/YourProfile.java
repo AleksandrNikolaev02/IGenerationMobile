@@ -51,13 +51,10 @@ import java.util.Map;
 public class YourProfile extends Fragment {
 
     private ShapeableImageView avatar;
-
-    private HorizontalScrollView horizontalScrollView;
     private TextView name;
     private TextView IGNRole;
     private TextView ratingUser;
     private TextView countProjectsUser;
-
     private Token token;
     private int user_id;
     private final ObjectMapper mapper = new ObjectMapper();
@@ -93,7 +90,6 @@ public class YourProfile extends Fragment {
         IGNRole = view.findViewById(R.id.IGNRole);
         ratingUser = view.findViewById(R.id.ratingUser);
         countProjectsUser = view.findViewById(R.id.countProjectsUser);
-        horizontalScrollView = view.findViewById(R.id.horizontal_scroll_view_id);
 
 
         new getCnt().execute();
