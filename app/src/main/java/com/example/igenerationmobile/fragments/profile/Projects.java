@@ -94,7 +94,7 @@ public class Projects extends Fragment implements RecyclerInterface {
             SharedPreferences sharedPreferences = getActivity().getApplicationContext().getSharedPreferences("Params", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPreferences.edit();
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            adapter.list.get(position).getImage().compress(Bitmap.CompressFormat.PNG, 100, baos);
+            //adapter.list.get(position).getImage().compress(Bitmap.CompressFormat.PNG, 100, baos);
             byte[] b = baos.toByteArray();
             String encoded = Base64.encodeToString(b, Base64.DEFAULT);
             editor.putString("project_image", encoded);
@@ -143,7 +143,7 @@ public class Projects extends Fragment implements RecyclerInterface {
 
                 int index_elem = adapter.getItemCount();
 
-                adapter.list.add(new RecyclerModel(entry.getValue(),
+                adapter.list.add(new RecyclerModel(entry.getKey().getImg_file(),
                         roleInProject,
                         StringEscapeUtils.unescapeJava(entry.getKey().getTitle()),
                         entry.getKey().getCreated_at().split(" ")[0],

@@ -1,5 +1,6 @@
 package com.example.igenerationmobile.adapters;
 
+
 import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -9,11 +10,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.igenerationmobile.R;
 import com.example.igenerationmobile.interfaces.RecyclerInterface;
 import com.example.igenerationmobile.model.RecyclerModel;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,11 +45,36 @@ public class AA_RecyclerAdapter extends RecyclerView.Adapter<AA_RecyclerAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull AA_RecyclerAdapter.AdapterHolder holder, int position) {
-        holder.image.setImageBitmap(list.get(position).getImage());
+        Picasso.get()
+                .load(list.get(position).getImage())
+                .fit()
+                .centerInside()
+                .into(holder.image);
+
         holder.title.setText(list.get(position).getTitle());
         holder.date.setText(list.get(position).getDate());
         holder.role.setText(list.get(position).getRole());
-        if (list.get(position).getRole().equals("Автор")) holder.role.setBackgroundColor(Color.GREEN);
+
+        switch (list.get(position).getRole()) {
+            case "Автор":
+                holder.role.setBackgroundColor(Color.GREEN);
+                break;
+            case "Наставник":
+                holder.role.setBackgroundColor(ContextCompat.getColor(context, R.color.mentor));
+                break;
+            case "Эксперт":
+                holder.role.setBackgroundColor(ContextCompat.getColor(context, R.color.expert));
+                break;
+            case "Администратор":
+                holder.role.setBackgroundColor(ContextCompat.getColor(context, R.color.administrator));
+                break;
+            case "Заказчик":
+                holder.role.setBackgroundColor(ContextCompat.getColor(context, R.color.customer));
+                break;
+            default:
+                holder.role.setBackgroundColor(ContextCompat.getColor(context, R.color.blue));
+                break;
+        }
     }
 
     @Override

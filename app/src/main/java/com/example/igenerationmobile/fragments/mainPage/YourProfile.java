@@ -3,6 +3,7 @@ package com.example.igenerationmobile.fragments.mainPage;
 import static android.view.View.TEXT_ALIGNMENT_CENTER;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -10,6 +11,7 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
 
 import android.util.TypedValue;
@@ -33,6 +35,7 @@ import com.example.igenerationmobile.http.HTTPMethods;
 import com.example.igenerationmobile.model.Achievement;
 import com.example.igenerationmobile.model.MyAchievement;
 import com.example.igenerationmobile.model.Token;
+import com.example.igenerationmobile.pages.YourProjects;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -49,6 +52,10 @@ import java.util.List;
 import java.util.Map;
 
 public class YourProfile extends Fragment {
+
+    private AppCompatButton projects;
+    private AppCompatButton settings;
+    private AppCompatButton notifications;
 
     private ShapeableImageView avatar;
     private TextView name;
@@ -90,11 +97,19 @@ public class YourProfile extends Fragment {
         IGNRole = view.findViewById(R.id.IGNRole);
         ratingUser = view.findViewById(R.id.ratingUser);
         countProjectsUser = view.findViewById(R.id.countProjectsUser);
-
+        projects = view.findViewById(R.id.projects);
+        settings = view.findViewById(R.id.settings);
+        notifications = view.findViewById(R.id.notifications);
 
         new getCnt().execute();
 
         new getAchivments().execute();
+
+        projects.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), YourProjects.class);
+
+            startActivity(intent);
+        });
 
         RequestQueue queue = Volley.newRequestQueue(getActivity());
 
@@ -244,6 +259,7 @@ public class YourProfile extends Fragment {
 
                 image.setOnClickListener(l -> {
                     System.out.println(l.getId());
+
                 });
 
                 LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(200, 200);

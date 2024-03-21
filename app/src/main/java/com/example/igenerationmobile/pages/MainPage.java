@@ -86,6 +86,7 @@ public class MainPage extends AppCompatActivity {
                 SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("UserData", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putInt("id", user.getId());
+                editor.putInt("status", user.getStatus());
                 editor.apply();
 
             } catch (JsonProcessingException e) {

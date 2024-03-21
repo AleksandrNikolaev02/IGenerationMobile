@@ -5,7 +5,7 @@ import android.graphics.Bitmap;
 import androidx.annotation.NonNull;
 
 public class RecyclerModel {
-    private Bitmap image;
+    private String imageUrl;
     private String role;
     private String title;
     private String date;
@@ -15,8 +15,8 @@ public class RecyclerModel {
     private int author_id;
 
 
-    public RecyclerModel(Bitmap image, String role, String title, String date, int project_id, int author_id) {
-        this.image = image;
+    public RecyclerModel(String imageUrl, String role, String title, String date, int project_id, int author_id) {
+        this.imageUrl = imageUrl;
         this.role = role;
         this.title = title;
         this.date = date;
@@ -24,8 +24,8 @@ public class RecyclerModel {
         this.author_id = author_id;
     }
 
-    public Bitmap getImage() {
-        return image;
+    public String getImage() {
+        return imageUrl;
     }
 
     public String getRole() {
@@ -52,7 +52,7 @@ public class RecyclerModel {
     @Override
     public String toString() {
         return "RecyclerModel{" +
-                "image=" + image +
+                "image=" + imageUrl +
                 ", role='" + role + '\'' +
                 ", title='" + title + '\'' +
                 ", date='" + date + '\'' +
