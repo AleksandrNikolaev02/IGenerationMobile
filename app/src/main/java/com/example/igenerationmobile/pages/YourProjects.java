@@ -48,6 +48,7 @@ public class YourProjects extends AppCompatActivity implements RecyclerInterface
     private Integer user_id;
     private Integer status;
     private JSONArray myProjects;
+    private boolean getSessionsFirstTimes = true;
     private ArrayAdapter<CharSequence> sessionAdapter;
     private Spinner sessions;
     LinearLayout linearLayout;
@@ -91,13 +92,13 @@ public class YourProjects extends AppCompatActivity implements RecyclerInterface
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 defaultSession = (String) parent.getItemAtPosition(position);
 
+                if (!getSessionsFirstTimes) {
+                    adapter.list.clear();
 
+                    loadData();
 
-                adapter.list.clear();
-
-                loadData();
-
-                adapter.notifyDataSetChanged();
+                    adapter.notifyDataSetChanged();
+                }
             }
 
             @Override
@@ -233,6 +234,7 @@ public class YourProjects extends AppCompatActivity implements RecyclerInterface
             super.onPostExecute(response);
 
             try {
+                getSessionsFirstTimes = false;
                 myProjects = new JSONArray(response);
 
                 loadData();
