@@ -22,8 +22,8 @@ import com.example.igenerationmobile.http.HTTPMethods;
 import com.example.igenerationmobile.interfaces.RecyclerInterface;
 import com.example.igenerationmobile.model.Token;
 import com.example.igenerationmobile.model.UserProject;
+import com.example.igenerationmobile.pages.MainPage;
 import com.example.igenerationmobile.pages.ProfileAnotherUser;
-import com.example.igenerationmobile.pages.ProfileNew;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.apache.commons.text.StringEscapeUtils;
@@ -95,9 +95,9 @@ public class UsersProject extends Fragment implements RecyclerInterface {
     public void onItemClick(int position) {
         Intent intent;
         if (adapter.users.get(position).getId().equals(user_id)) {
-            intent = new Intent(getActivity(), ProfileNew.class);
+            intent = new Intent(getActivity(), MainPage.class);
 
-            intent.putExtra("token", token);
+            intent.putExtra("fragmentID", R.id.yourProfile);
 
         } else {
             intent = new Intent(requireActivity(), ProfileAnotherUser.class);

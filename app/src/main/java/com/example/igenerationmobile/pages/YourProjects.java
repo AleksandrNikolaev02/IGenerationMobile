@@ -8,9 +8,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -34,6 +36,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -129,7 +132,18 @@ public class YourProjects extends AppCompatActivity implements RecyclerInterface
 
     @Override
     public void onItemClick(int position) {
+        Intent intent = new Intent(this, MyProjectPage.class);
+        System.out.println(adapter.list.get(position));
 
+        SharedPreferences sharedPreferences = this.getApplicationContext().getSharedPreferences("UserData", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        editor.putInt("project_id", adapter.list.get(position).getProject_id());
+        editor.putInt("author_id", adapter.list.get(position).getAuthor_id());
+
+        editor.apply();
+
+        startActivity(intent);
     }
 
     public void loadData() {

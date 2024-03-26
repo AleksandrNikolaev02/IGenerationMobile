@@ -2,7 +2,6 @@ package com.example.igenerationmobile.fragments.myProject;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
@@ -21,6 +20,7 @@ import com.example.igenerationmobile.model.ProjectID;
 import com.example.igenerationmobile.model.Token;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.squareup.picasso.Picasso;
 
 
 import java.io.IOException;
@@ -28,7 +28,7 @@ import java.io.IOException;
 
 public class ViewProject extends Fragment {
 
-    private ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
     private ImageView projectImage;
 
     private TextView Created;
@@ -40,13 +40,10 @@ public class ViewProject extends Fragment {
 
     private String token;
 
-    private Bitmap image;
-
     private Integer project_id;
 
-    public ViewProject(String token, Bitmap image, Integer project_id) {
+    public ViewProject(String token, Integer project_id) {
         this.token = token;
-        this.image = image;
         this.project_id = project_id;
     }
 
@@ -71,8 +68,6 @@ public class ViewProject extends Fragment {
             bottomNavigationView = getActivity().findViewById(R.id.bottomNavigationView2);
         }
 
-        projectImage.setImageBitmap(image);
-
         return view;
     }
 
@@ -80,6 +75,7 @@ public class ViewProject extends Fragment {
         @Override
         protected String doInBackground(String... strings) {
             try {
+                System.out.println(token);
                 Token tokenObj = mapper.readValue(token, Token.class);
                 return HTTPMethods.projectID(tokenObj, project_id);
             } catch (IOException e) {
@@ -93,6 +89,15 @@ public class ViewProject extends Fragment {
 
             try {
                 ProjectID project = mapper.readValue(response, ProjectID.class);
+
+                String imagePath = project.getImg_file();
+
+                Picasso.get()
+                        .load(imagePath.isEmpty() ? HTTPMethods.urlIGN + "/img/no_icon.png" :
+                                HTTPMethods.urlApi + "/image/" + imagePath.replaceAll("\\\\/", "/"))
+                        .fit()
+                        .centerInside()
+                        .into(projectImage);
 
                 Created.setText(project.getCreated_at());
                 Place.setText(project.getPlace());

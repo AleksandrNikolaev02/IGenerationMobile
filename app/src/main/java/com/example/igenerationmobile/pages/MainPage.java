@@ -20,6 +20,7 @@ import com.example.igenerationmobile.model.Token;
 import com.example.igenerationmobile.model.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.io.IOException;
 
@@ -38,7 +39,16 @@ public class MainPage extends AppCompatActivity {
         binding = ActivityMainPageBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        ReplaceFragment(new AllProjects());
+        Bundle bundle = getIntent().getExtras();
+
+        if (bundle != null) {
+            int fragmentID = bundle.getInt("fragmentID");
+            ReplaceFragment(new YourProfile());
+            BottomNavigationView view = findViewById(R.id.bottomMainPageView);
+            view.setSelectedItemId(R.id.yourProfile);
+        } else {
+            ReplaceFragment(new AllProjects());
+        }
 
         binding.bottomMainPageView.setOnItemSelectedListener(v -> {
             switch(v.getItemId()) {

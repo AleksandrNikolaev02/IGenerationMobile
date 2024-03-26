@@ -7,10 +7,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.util.Base64;
 
 import com.example.igenerationmobile.R;
 import com.example.igenerationmobile.databinding.ActivityMyProjectPageBinding;
@@ -18,7 +15,6 @@ import com.example.igenerationmobile.fragments.myProject.EmptyProject;
 import com.example.igenerationmobile.fragments.myProject.TrajectoryProject;
 import com.example.igenerationmobile.fragments.myProject.UsersProject;
 import com.example.igenerationmobile.fragments.myProject.ViewProject;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class MyProjectPage extends AppCompatActivity {
 
@@ -31,41 +27,33 @@ public class MyProjectPage extends AppCompatActivity {
 
     private ActivityMyProjectPageBinding binding;
 
-    private Bitmap projectImage;
 
-    private final ObjectMapper mapper = new ObjectMapper();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMyProjectPageBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        Bundle extras = getIntent().getExtras();
+        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("UserData", Context.MODE_PRIVATE);
+        token = sharedPreferences.getString("token", "");
+        project_id = sharedPreferences.getInt("project_id", -1);
+        author_id = sharedPreferences.getInt("author_id", -1);
 
-        if (extras != null) {
-            token = extras.getString("token");
-            project_id = extras.getInt("project_id");
-            author_id = extras.getInt("author_id");
-            SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("Params", Context.MODE_PRIVATE);
-            String encoded = sharedPreferences.getString("project_image", "");
-            byte[] imageAsBytes = Base64.decode(encoded.getBytes(), Base64.DEFAULT);
-            projectImage = BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length);
-        }
 
-        ReplaceFragment(new ViewProject(token, projectImage, project_id));
+        ReplaceFragment(new ViewProject(token, project_id));
 
         binding.bottomNavigationView2.setOnItemSelectedListener(item -> {
 
             switch (item.getItemId()) {
                 case R.id.viewProject:
-                    ReplaceFragment(new ViewProject(token, projectImage, project_id));
+                    ReplaceFragment(new ViewProject(token, project_id));
                     break;
                 case R.id.usersProject:
                     ReplaceFragment(new UsersProject(token, project_id, author_id));
                     break;
                 case R.id.trajectoryProject:
-                    SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("pages.my_project_page", Context.MODE_PRIVATE);
-                    track_id = sharedPreferences.getInt("track_id", -1);
+                    SharedPreferences track = getApplicationContext().getSharedPreferences("pages.my_project_page", Context.MODE_PRIVATE);
+                    track_id = track.getInt("track_id", -1);
                     if (track_id == -1) {
                         ReplaceFragment(new EmptyProject());
                     } else {
