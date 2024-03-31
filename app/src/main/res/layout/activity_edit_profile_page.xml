@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".pages.EditProfilePage">
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="15dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:layout_centerInParent="true"
+
+                    android:background="@color/white"
+                    android:fontFamily="@font/poppins_bold"
+                    android:text="@string/edit"
+                    android:textColor="@color/black"
+
+                    android:textSize="30sp"
+                    android:textStyle="bold"
+                    app:popupTheme="@style/AppTheme.PopupOverlay"
+                    app:title="@string/edit" />
+
+
+                <ImageButton
+                    android:id="@+id/confirm"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_alignParentEnd="true"
+                    android:background="@color/white"
+                    android:src="@drawable/confirm_edit"
+                    android:contentDescription="TODO" />
+
+            </RelativeLayout>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                app:cardCornerRadius="10dp"
+                android:layout_marginTop="20dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="0dp"
+                    android:padding="15dp"
+                    android:background="@color/white">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/ShapeableImageView"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_gravity="center"
+                        android:scaleType="centerCrop"
+                        android:src="@color/grey"
+                        app:shapeAppearanceOverlay="@style/ShapeAppearance.CircularBorder" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:layout_marginTop="10dp"
+                app:cardCornerRadius="10dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="15dp"
+                    android:background="@color/white">
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/black"
+                            android:text="Информация о вас"
+                            android:fontFamily="@font/poppins_medium"
+                            android:textSize="15sp"
+                            android:layout_alignParentStart="true"
+                            android:textStyle="bold"/>
+
+                        <LinearLayout
+                            android:id="@+id/firstLinearLayout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="30dp"
+                                android:fontFamily="@font/poppinsregular"
+                                android:text="Фамилия:"
+                                android:textColor="@color/black"
+                                android:textSize="15sp" />
+
+                            <androidx.appcompat.widget.AppCompatEditText
+                                android:id="@+id/fname"
+                                android:layout_width="wrap_content"
+                                android:layout_height="48dp"
+                                android:layout_marginTop="30dp"
+                                android:fontFamily="@font/poppinsregular"
+                                android:text="todo"
+                                android:textColor="@color/black"
+                                android:textSize="15sp"
+                                android:layout_marginStart="20dp"/>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/secondLinearLayout"
+                            android:layout_below="@id/firstLinearLayout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:fontFamily="@font/poppinsregular"
+                                android:text="Имя:"
+                                android:textColor="@color/black"
+                                android:textSize="15sp" />
+
+                            <androidx.appcompat.widget.AppCompatEditText
+                                android:id="@+id/iname"
+                                android:layout_width="wrap_content"
+                                android:layout_height="48dp"
+                                android:layout_marginTop="10dp"
+                                android:fontFamily="@font/poppinsregular"
+                                android:text="todo"
+                                android:textColor="@color/black"
+                                android:textSize="15sp"
+                                android:layout_marginStart="20dp"/>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/thirdLinearLayout"
+                            android:layout_below="@id/secondLinearLayout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:fontFamily="@font/poppinsregular"
+                                android:text="Отчество:"
+                                android:textColor="@color/black"
+                                android:textSize="15sp" />
+
+                            <androidx.appcompat.widget.AppCompatEditText
+                                android:id="@+id/oname"
+                                android:layout_width="wrap_content"
+                                android:layout_height="48dp"
+                                android:layout_marginTop="10dp"
+                                android:fontFamily="@font/poppinsregular"
+                                android:text="todo"
+                                android:textColor="@color/black"
+                                android:textSize="15sp"
+                                android:layout_marginStart="20dp"/>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_below="@id/thirdLinearLayout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:fontFamily="@font/poppinsregular"
+                                android:text="Организация:"
+                                android:textColor="@color/black"
+                                android:textSize="15sp" />
+
+                            <androidx.appcompat.widget.AppCompatEditText
+                                android:id="@+id/organization"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:fontFamily="@font/poppinsregular"
+                                android:text="todo"
+                                android:textColor="@color/black"
+                                android:textSize="15sp"
+                                android:layout_marginStart="20dp"/>
+
+                        </LinearLayout>
+
+                    </RelativeLayout>
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</RelativeLayout>

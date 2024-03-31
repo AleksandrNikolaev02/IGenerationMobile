@@ -18,7 +18,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.HorizontalScrollView;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -35,6 +35,7 @@ import com.example.igenerationmobile.http.HTTPMethods;
 import com.example.igenerationmobile.model.Achievement;
 import com.example.igenerationmobile.model.MyAchievement;
 import com.example.igenerationmobile.model.Token;
+import com.example.igenerationmobile.pages.EditProfilePage;
 import com.example.igenerationmobile.pages.YourProjects;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -57,11 +58,16 @@ public class YourProfile extends Fragment {
     private AppCompatButton settings;
     private AppCompatButton notifications;
 
+    private ImageButton edit;
+
     private ShapeableImageView avatar;
+    private String pathToAvatar;
     private TextView name;
     private TextView IGNRole;
     private TextView ratingUser;
     private TextView countProjectsUser;
+    private TextView login;
+    private TextView organization;
     private Token token;
     private int user_id;
     private final ObjectMapper mapper = new ObjectMapper();
@@ -74,6 +80,26 @@ public class YourProfile extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (getActivity() != null) {
+            SharedPreferences sharedPreferences = getActivity().getApplicationContext().getSharedPreferences("UserData", Context.MODE_PRIVATE);
+
+            String fname = sharedPreferences.getString("fname", "");
+            String iname = sharedPreferences.getString("iname", "");
+            String oname = sharedPreferences.getString("oname", "");
+
+            if (!fname.equals("") && !iname.equals("") && !oname.equals("")) {
+                String newName = fname + " " + iname + " " + oname;
+                name.setText(newName);
+            }
+
+        }
 
     }
 
@@ -100,6 +126,19 @@ public class YourProfile extends Fragment {
         projects = view.findViewById(R.id.projects);
         settings = view.findViewById(R.id.settings);
         notifications = view.findViewById(R.id.notifications);
+        login = view.findViewById(R.id.login);
+        organization = view.findViewById(R.id.organization);
+        edit = view.findViewById(R.id.edit);
+
+        edit.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), EditProfilePage.class);
+
+            intent.putExtra("name", name.getText());
+            intent.putExtra("organization", organization.getText());
+            intent.putExtra("path", pathToAvatar);
+
+            startActivity(intent);
+        });
 
         new getCnt().execute();
 
@@ -126,9 +165,11 @@ public class YourProfile extends Fragment {
                     try {
                         String imagePath = user.getString("img_file");
 
+                        pathToAvatar = imagePath.isEmpty() ? HTTPMethods.urlIGN + "/img/avatar_00.png" :
+                                HTTPMethods.urlApi + "/image/" + imagePath.replaceAll("\\\\/", "/");
+
                         Picasso.get()
-                                .load(imagePath.isEmpty() ? HTTPMethods.urlIGN + "/img/avatar_00.png" :
-                                        HTTPMethods.urlApi + "/image/" + imagePath.replaceAll("\\\\/", "/"))
+                                .load(pathToAvatar)
                                 .placeholder(R.drawable.loading_animation_profile)
                                 .fit()
                                 .centerInside()
@@ -139,6 +180,9 @@ public class YourProfile extends Fragment {
                                 StringEscapeUtils.unescapeJava(user.getString("oname"));
                         name.setText(nameUser);
                         ratingUser.setText(String.valueOf(user.getJSONObject("rating").getInt("achievements_sum")));
+
+                        login.setText(user.getString("name"));
+                        organization.setText(StringEscapeUtils.unescapeJava(user.getString("place_name")));
 
                         int status = user.getInt("status");
 
