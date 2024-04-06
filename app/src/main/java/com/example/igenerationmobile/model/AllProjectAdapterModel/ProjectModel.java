@@ -1,5 +1,8 @@
 package com.example.igenerationmobile.model.AllProjectAdapterModel;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ProjectModel {
 
     private String projectImageURL;
@@ -11,13 +14,36 @@ public class ProjectModel {
     private String title;
 
     private int project_id;
+    private List<Integer> users;
+    private int author_id;
 
-    public ProjectModel(String projectImageURL, int rating, String projectName, String title, int project_id) {
+
+    public ProjectModel(String projectImageURL,
+                        int rating,
+                        String projectName,
+                        String title,
+                        int project_id,
+                        ArrayList<Integer> users,
+                        int author_id) {
         this.projectImageURL = projectImageURL;
         this.rating = rating;
         this.projectName = projectName;
         this.title = title;
         this.project_id = project_id;
+        this.users = users;
+        this.author_id = author_id;
+    }
+
+    public List<Integer> getUsers() {
+        return users;
+    }
+
+    public void setUsers(List<Integer> users) {
+        this.users = users;
+    }
+
+    public int getAuthor_id() {
+        return author_id;
     }
 
     public String getProjectImage() {

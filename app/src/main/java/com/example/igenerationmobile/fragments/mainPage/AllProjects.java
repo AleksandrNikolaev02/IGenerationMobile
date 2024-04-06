@@ -1,6 +1,7 @@
 package com.example.igenerationmobile.fragments.mainPage;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -26,6 +27,8 @@ import com.example.igenerationmobile.http.HTTPMethods;
 import com.example.igenerationmobile.interfaces.RecyclerInterface;
 import com.example.igenerationmobile.model.AllProjectAdapterModel.ProjectModel;
 import com.example.igenerationmobile.model.Token;
+import com.example.igenerationmobile.pages.MyProjectPage;
+import com.example.igenerationmobile.pages.ProjectAnotherUser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -36,16 +39,19 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 public class AllProjects extends Fragment implements RecyclerInterface {
 
     private Token token;
-
+    private int user_id;
     private RecyclerView recyclerView;
 
     private Spinner sessions;
+    private Set<String> uniqSessions = new HashSet<>();
     private Spinner trajectory;
     private String defaultSession;
     private String defaultTrajectory;
@@ -53,7 +59,7 @@ public class AllProjects extends Fragment implements RecyclerInterface {
     private AllProjectsAdapter adapter;
 
     private ArrayAdapter<CharSequence> sessionAdapter;
-    private ArrayAdapter<CharSequence> trajectoryAdapter;
+    private ArrayAdapter<String> trajectoryAdapter;
 
     private ProgressBar loadingPB;
     private NestedScrollView nestedSV;
@@ -61,6 +67,8 @@ public class AllProjects extends Fragment implements RecyclerInterface {
 
     List<ProjectModel> allProjects = new ArrayList<>();
     private final int limit = 10;
+
+    private boolean loadTrajectory = false;
     public AllProjects() {}
 
 
@@ -80,6 +88,7 @@ public class AllProjects extends Fragment implements RecyclerInterface {
             SharedPreferences sharedPreferences = getActivity().getApplicationContext().getSharedPreferences("UserData", Context.MODE_PRIVATE);
             try {
                 token = mapper.readValue(sharedPreferences.getString("token", ""), Token.class);
+                user_id = sharedPreferences.getInt("id", -1);
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
@@ -101,11 +110,11 @@ public class AllProjects extends Fragment implements RecyclerInterface {
                 R.array.sessions, android.R.layout.simple_spinner_item);
         sessionAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        trajectoryAdapter = ArrayAdapter.createFromResource(getActivity(),
-                R.array.trajectory, android.R.layout.simple_spinner_item);
-        trajectoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//        trajectoryAdapter = ArrayAdapter.createFromResource(getActivity(),
+//                R.array.trajectory, android.R.layout.simple_spinner_item);
+//        trajectoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        trajectory.setAdapter(trajectoryAdapter);
+//        trajectory.setAdapter(trajectoryAdapter);
         sessions.setAdapter(sessionAdapter);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -149,7 +158,23 @@ public class AllProjects extends Fragment implements RecyclerInterface {
 
     @Override
     public void onItemClick(int position) {
+        Intent intent;
+        SharedPreferences sharedPreferences = requireActivity().getApplicationContext().getSharedPreferences("UserData", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
 
+        editor.putInt("project_id", adapter.projects.get(position).getProject_id());
+        editor.putInt("author_id", adapter.projects.get(position).getAuthor_id());
+
+        if (adapter.projects.get(position).getUsers().contains(user_id)) {
+            intent = new Intent(getActivity(), MyProjectPage.class);
+
+        } else {
+            intent = new Intent(getActivity(), ProjectAnotherUser.class);
+            intent.putExtra("nameProject", adapter.projects.get(position).getProjectName());
+        }
+
+        editor.apply();
+        startActivity(intent);
     }
 
     private class getAllProjects extends AsyncTask<String, String, String> {
@@ -176,13 +201,26 @@ public class AllProjects extends Fragment implements RecyclerInterface {
                     if (project.getJSONArray("tracks_title").length() > 0) {
                         String projectImageURL = img_file.isEmpty() ? HTTPMethods.urlIGN + "/img/no_icon.png" :
                                 HTTPMethods.urlApi + "/image/" + img_file.replaceAll("\\\\/", "/");
+
+                        uniqSessions.add(StringEscapeUtils.unescapeJava(project.getJSONArray("tracks_title").getJSONObject(0).getString("title")));
+
+                        ArrayList<Integer> users = new ArrayList<>();
+
+                        JSONArray userCard = project.getJSONArray("users_card");
+
+                        for (int j = 0; j < userCard.length(); j++) {
+                            users.add(userCard.getJSONObject(j).getInt("user_id"));
+                        }
+
                         if (defaultTrajectory.equals("Не выбрано")) {
                             allProjects.add(new ProjectModel(
                                     projectImageURL,
                                     project.getJSONArray("tracks_title").getJSONObject(0).getInt("rating"),
                                     StringEscapeUtils.unescapeJava(project.getString("title")),
                                     project.getJSONArray("tracks_title").getJSONObject(0).getString("title"),
-                                    project.getInt("id")
+                                    project.getInt("id"),
+                                    users,
+                                    project.getInt("user_id")
                             ));    
                         } else {
                             if (defaultTrajectory.equals(StringEscapeUtils.unescapeJava(project.getJSONArray("tracks_title").getJSONObject(0).getString("title")))) {
@@ -191,13 +229,30 @@ public class AllProjects extends Fragment implements RecyclerInterface {
                                         project.getJSONArray("tracks_title").getJSONObject(0).getInt("rating"),
                                         StringEscapeUtils.unescapeJava(project.getString("title")),
                                         project.getJSONArray("tracks_title").getJSONObject(0).getString("title"),
-                                        project.getInt("id")
+                                        project.getInt("id"),
+                                        users,
+                                        project.getInt("user_id")
                                 ));
                             }
                         }
                         
                     }
 
+                }
+
+                uniqSessions.add("без траектории");
+                uniqSessions.add("Не выбрано");
+
+                System.out.println(uniqSessions);
+
+                if (!loadTrajectory) {
+                    List<String> listSessions = new ArrayList<>(uniqSessions);
+
+                    trajectoryAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listSessions);
+                    trajectoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    trajectory.setAdapter(trajectoryAdapter);
+                    trajectory.setSelection(listSessions.indexOf("Не выбрано"));
+                    loadTrajectory = true;
                 }
 
                 allProjects.sort((o1, o2) -> o2.getRating() - o1.getRating());

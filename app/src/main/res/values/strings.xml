@@ -63,6 +63,7 @@
     <string name="created">Создан</string>
     <string name="place">Место</string>
     <string name="ratingProject">Рейтинг</string>
+    <string name="description">Описание</string>
 
 
     <!-- Меню основной страницы (MainPage) -->
@@ -70,6 +71,9 @@
     <string name="allUsers">Участники</string>
     <string name="yourProfile">Профиль</string>
 
+
     <string name="send">Вы ничего не меняли</string>
     <string name="success">Данные сохранены!</string>
+
+    <string name="todo">todo</string>
 </resources>

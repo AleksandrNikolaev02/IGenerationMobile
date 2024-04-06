@@ -17,6 +17,9 @@
         android:theme="@style/Theme.IGenerationMobile"
         tools:targetApi="31">
         <activity
+            android:name=".pages.ProjectAnotherUser"
+            android:exported="false" />
+        <activity
             android:name=".pages.EditProfilePage"
             android:exported="false" />
         <activity
