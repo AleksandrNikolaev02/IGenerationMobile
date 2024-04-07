@@ -49,7 +49,7 @@ public class MyProjectPage extends AppCompatActivity {
                     ReplaceFragment(new ViewProject(token, project_id));
                     break;
                 case R.id.usersProject:
-                    ReplaceFragment(new UsersProject(token, project_id, author_id));
+                    ReplaceFragment(new UsersProject(project_id, author_id));
                     break;
                 case R.id.trajectoryProject:
                     SharedPreferences track = getApplicationContext().getSharedPreferences("pages.my_project_page", Context.MODE_PRIVATE);

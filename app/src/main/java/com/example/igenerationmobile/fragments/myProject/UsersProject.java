@@ -24,6 +24,7 @@ import com.example.igenerationmobile.model.Token;
 import com.example.igenerationmobile.model.UserProject;
 import com.example.igenerationmobile.pages.MainPage;
 import com.example.igenerationmobile.pages.ProfileAnotherUser;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.apache.commons.text.StringEscapeUtils;
@@ -41,7 +42,7 @@ import java.util.concurrent.ConcurrentMap;
 
 public class UsersProject extends Fragment implements RecyclerInterface {
 
-    private String token;
+    private Token token;
 
     private Integer project_id;
 
@@ -55,8 +56,7 @@ public class UsersProject extends Fragment implements RecyclerInterface {
 
     private ObjectMapper mapper = new ObjectMapper();
 
-    public UsersProject(String token, Integer project_id, Integer author_id) {
-        this.token = token;
+    public UsersProject(Integer project_id, Integer author_id) {
         this.project_id = project_id;
         this.author_id = author_id;
     }
@@ -66,14 +66,6 @@ public class UsersProject extends Fragment implements RecyclerInterface {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getActivity() != null) {
-            SharedPreferences sharedPreferences = getActivity().getApplicationContext().getSharedPreferences("Params", Context.MODE_PRIVATE);
-            user_id = sharedPreferences.getInt("user_id", -1);
-            System.out.println(user_id);
-            System.out.println(author_id);
-        }
-
-        new HTTPProcess().execute();
     }
 
     @Override
@@ -87,6 +79,20 @@ public class UsersProject extends Fragment implements RecyclerInterface {
 
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        if (getActivity() != null) {
+            SharedPreferences sharedPreferences = getActivity().getApplicationContext().getSharedPreferences("UserData", Context.MODE_PRIVATE);
+            user_id = sharedPreferences.getInt("id", -1);
+            try {
+                token = mapper.readValue(sharedPreferences.getString("token", ""), Token.class);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+            System.out.println(user_id);
+            System.out.println(author_id);
+        }
+
+        new HTTPProcess().execute();
 
         return view;
     }
@@ -117,7 +123,6 @@ public class UsersProject extends Fragment implements RecyclerInterface {
                 editor.apply();
             }
 
-            intent.putExtra("token", token);
             intent.putExtra("user_id", adapter.users.get(position).getId());
         }
         startActivity(intent);
@@ -129,8 +134,7 @@ public class UsersProject extends Fragment implements RecyclerInterface {
         @Override
         protected ConcurrentMap<String, Bitmap> doInBackground(String... strings) {
             try {
-                Token tokenObj = mapper.readValue(token, Token.class);
-                String usersString = HTTPMethods.projectUsers(tokenObj, project_id);
+                String usersString = HTTPMethods.projectUsers(token, project_id);
                 jsonArray = new JSONArray(usersString);
 
                 List<Thread> threads = new ArrayList<>();
@@ -190,7 +194,8 @@ public class UsersProject extends Fragment implements RecyclerInterface {
                                     .append(".").toString(),
                             roleInProject,
                             user.getInt("user_id"),
-                            fileName
+                            fileName,
+                            user.getInt("status")
                     ));
 
 

@@ -7,17 +7,21 @@ public class UserProject {
     private Integer id;
     private Bitmap avatar;
     private String img_file;
-
     private String fio;
-
     private String role;
+    private int status;
 
-    public UserProject(Bitmap avatar, String fio, String role, Integer id, String img_file) {
+    public UserProject(Bitmap avatar, String fio, String role, Integer id, String img_file, int status) {
         this.avatar = avatar;
         this.fio = fio;
         this.role = role;
         this.id = id;
         this.img_file = img_file;
+        this.status = status;
+    }
+
+    public int getStatus() {
+        return status;
     }
 
     public Bitmap getAvatar() {

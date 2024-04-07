@@ -1,66 +1,210 @@
 package com.example.igenerationmobile.fragments.projectAnotherUser;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.igenerationmobile.R;
+import com.example.igenerationmobile.adapters.ProjectsAdapter;
+import com.example.igenerationmobile.http.HTTPMethods;
+import com.example.igenerationmobile.interfaces.RecyclerInterface;
+import com.example.igenerationmobile.model.Token;
+import com.example.igenerationmobile.model.UserProject;
+import com.example.igenerationmobile.pages.MainPage;
+import com.example.igenerationmobile.pages.ProfileAnotherUser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link UsersProjectAnotherUser#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class UsersProjectAnotherUser extends Fragment {
+import org.apache.commons.text.StringEscapeUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+
+public class UsersProjectAnotherUser extends Fragment implements RecyclerInterface {
+
+    private Token token;
+    private Integer project_id;
+    private Integer user_id;
+    private Integer author_id;
+    private RecyclerView recyclerView;
+    private Toolbar toolbar;
+    private ProjectsAdapter adapter;
+    private final ObjectMapper mapper = new ObjectMapper();
 
     public UsersProjectAnotherUser() {
-        // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment UsersProjectAnotherUser.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static UsersProjectAnotherUser newInstance(String param1, String param2) {
-        UsersProjectAnotherUser fragment = new UsersProjectAnotherUser();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_users_project_another_user, container, false);
+        View view = inflater.inflate(R.layout.fragment_users_project_another_user, container, false);
+
+        recyclerView = view.findViewById(R.id.listProjects);
+
+        if (getActivity() != null) {
+            toolbar = getActivity().findViewById(R.id.toolbar);
+            toolbar.setTitle("Участники");
+        }
+
+        adapter = new ProjectsAdapter(getActivity(), this);
+
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        SharedPreferences sharedPreferences = requireActivity().getApplicationContext().getSharedPreferences("UserData", Context.MODE_PRIVATE);
+
+        user_id = sharedPreferences.getInt("id", -1);
+        project_id = sharedPreferences.getInt("project_id", -1);
+        author_id = sharedPreferences.getInt("author_id", -1);
+        try {
+            token = mapper.readValue(sharedPreferences.getString("token", ""), Token.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
+        new HTTPProcess().execute();
+
+        return view;
+    }
+
+    @Override
+    public void onItemClick(int position) {
+        Intent intent;
+        if (adapter.users.get(position).getId().equals(user_id)) {
+            intent = new Intent(getActivity(), MainPage.class);
+
+            intent.putExtra("fragmentID", R.id.yourProfile);
+
+        } else {
+            intent = new Intent(requireActivity(), ProfileAnotherUser.class);
+
+            // encoded image
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            adapter.users.get(position).getAvatar().compress(Bitmap.CompressFormat.PNG, 100, baos);
+            byte[] b = baos.toByteArray();
+            String encoded = Base64.encodeToString(b, Base64.DEFAULT);
+
+            // save image in shared preference
+            if (getActivity() != null) {
+                SharedPreferences sharedPreferences = getActivity().getApplicationContext().getSharedPreferences("image.public.profile_imgs", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+
+                editor.putString(adapter.users.get(position).getImg_file(), encoded);
+                editor.apply();
+            }
+
+//            intent.putExtra("token", token);
+            intent.putExtra("user_id", adapter.users.get(position).getId());
+        }
+        startActivity(intent);
+    }
+
+    @SuppressWarnings({"deprecation"})
+    private class HTTPProcess extends AsyncTask<String, ConcurrentMap<String, Bitmap>, ConcurrentMap<String, Bitmap>> {
+
+        private JSONArray jsonArray;
+        @Override
+        protected ConcurrentMap<String, Bitmap> doInBackground(String... strings) {
+            try {
+                String usersString = HTTPMethods.projectUsers(token, project_id);
+                jsonArray = new JSONArray(usersString);
+
+                List<Thread> threads = new ArrayList<>();
+                ConcurrentMap<String, Bitmap> images = new ConcurrentHashMap<>();
+
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject user = jsonArray.getJSONObject(i);
+                    Thread thread = new Thread(() -> {
+                        try {
+                            Bitmap bitmap;
+                            if (user.getString("img_file").isEmpty()) {
+                                bitmap = HTTPMethods.getDefaultImage();
+                            } else {
+                                bitmap = HTTPMethods.getImage(user.getString("img_file"));
+                            }
+                            images.put(user.getString("img_file"), bitmap);
+                        } catch (JSONException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+                    threads.add(thread);
+                }
+
+                for (Thread thread : threads) {
+                    thread.start();
+                }
+
+                for (Thread thread : threads) {
+                    thread.join();
+                }
+                return images;
+            } catch (IOException | JSONException | InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        @Override
+        protected void onPostExecute(ConcurrentMap<String, Bitmap> map) {
+            super.onPostExecute(map);
+
+            for (int i = 0; i < jsonArray.length(); i++) {
+                try {
+                    JSONObject user = jsonArray.getJSONObject(i);
+                    String fileName = user.getString("img_file");
+                    String roleInProject = author_id.equals(user.getInt("user_id")) ? "Автор" : "Менеджер";
+
+                    int index_elem = adapter.getItemCount();
+
+                    adapter.users.add(new UserProject(
+                            map.get(fileName),
+                            new StringBuilder()
+                                    .append(StringEscapeUtils.unescapeJava(user.getString("fname")))
+                                    .append(" ")
+                                    .append(StringEscapeUtils.unescapeJava(user.getString("iname")).charAt(0))
+                                    .append(". ")
+                                    .append(StringEscapeUtils.unescapeJava(user.getString("oname")).charAt(0))
+                                    .append(".").toString(),
+                            roleInProject,
+                            user.getInt("user_id"),
+                            fileName,
+                            user.getInt("status")
+                    ));
+
+
+
+                    adapter.notifyItemInserted(index_elem);
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
     }
 }

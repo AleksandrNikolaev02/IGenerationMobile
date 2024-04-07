@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
 import com.example.igenerationmobile.R;
@@ -23,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
+import java.util.Objects;
 
 
 public class ViewProjectAnotherUser extends Fragment {
@@ -34,6 +36,7 @@ public class ViewProjectAnotherUser extends Fragment {
     private TextView Rating;
     private TextView nameProject;
     private TextView Description;
+    private Toolbar toolbar;
     private Token token;
     private Integer project_id;
 
@@ -61,6 +64,12 @@ public class ViewProjectAnotherUser extends Fragment {
 
 
         SharedPreferences sharedPreferences = requireActivity().getApplicationContext().getSharedPreferences("UserData", Context.MODE_PRIVATE);
+
+
+        if (getActivity() != null) {
+            toolbar = getActivity().findViewById(R.id.toolbar);
+            toolbar.setTitle("Обзор");
+        }
 
         project_id = sharedPreferences.getInt("project_id", -1);
 
@@ -96,6 +105,7 @@ public class ViewProjectAnotherUser extends Fragment {
 
                 String imagePath = project.getImg_file();
 
+
                 Picasso.get()
                         .load(imagePath.isEmpty() ? HTTPMethods.urlIGN + "/img/no_icon.png" :
                                 HTTPMethods.urlApi + "/image/" + imagePath.replaceAll("\\\\/", "/"))
@@ -115,6 +125,7 @@ public class ViewProjectAnotherUser extends Fragment {
 
                 if (description == null) {
                     Description.setText("...");
+
                 } else {
                     spannedText = Html.fromHtml(description, Html.FROM_HTML_MODE_COMPACT);
 

@@ -2,7 +2,9 @@ package com.example.igenerationmobile.pages;
 
 import static android.view.View.TEXT_ALIGNMENT_CENTER;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -11,6 +13,7 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Base64;
+import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.example.igenerationmobile.R;
@@ -35,6 +38,7 @@ public class ProfileAnotherUser extends AppCompatActivity {
     private TextView rating;
     private TextView countProjectsAnotherUser;
     private TextView IGNRole;
+    private Toolbar toolbar;
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Override
@@ -48,19 +52,38 @@ public class ProfileAnotherUser extends AppCompatActivity {
         countProjectsAnotherUser = findViewById(R.id.countProjectsAnotherUser);
         IGNRole = findViewById(R.id.IGNRole);
 
-        Bundle extras = getIntent().getExtras();
+        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("UserData", Context.MODE_PRIVATE);
+        try {
+            token = mapper.readValue(sharedPreferences.getString("token", ""), Token.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
 
+        Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            try {
-                token = mapper.readValue(extras.getString("token"), Token.class);
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
             user_id = extras.getInt("user_id");
         }
 
         new HTTPProcess().execute();
         new getCountProjects().execute();
+
+        toolbar = findViewById(R.id.toolbar);
+
+        setSupportActionBar(toolbar);
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private class HTTPProcess extends AsyncTask<String, String, String> {
