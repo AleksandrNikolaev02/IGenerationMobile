@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.MenuItem;
 
@@ -19,7 +20,10 @@ public class ProjectAnotherUser extends AppCompatActivity {
 
     private Toolbar toolbar;
     private ActivityProjectAnotherUserBinding binding;
+    private int state;
 
+
+    @SuppressLint("NonConstantResourceId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,8 +32,6 @@ public class ProjectAnotherUser extends AppCompatActivity {
 
         setContentView(binding.getRoot());
 
-        Bundle bundle = getIntent().getExtras();
-
         toolbar = findViewById(R.id.toolbar);
 
         setSupportActionBar(toolbar);
@@ -37,25 +39,23 @@ public class ProjectAnotherUser extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
-            System.out.println("ActionBar not is null");
-        } else {
-            System.out.println("ActionBar is null");
-        }
-
-        if (bundle != null) {
-            toolbar.setTitle(bundle.getString("nameProject"));
         }
 
         ReplaceFragment(new ViewProjectAnotherUser());
+        state = R.id.viewProject;
 
         binding.bottomMainPageView.setOnItemSelectedListener(v -> {
 
             switch(v.getItemId()) {
                 case R.id.viewProject:
+                    if (state == R.id.viewProject) break;
                     ReplaceFragment(new ViewProjectAnotherUser());
+                    state = R.id.viewProject;
                     break;
                 case R.id.usersProject:
+                    if (state == R.id.usersProject) break;
                     ReplaceFragment(new UsersProjectAnotherUser());
+                    state = R.id.usersProject;
                     break;
             }
 

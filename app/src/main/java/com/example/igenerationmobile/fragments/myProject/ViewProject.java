@@ -1,12 +1,16 @@
 package com.example.igenerationmobile.fragments.myProject;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
+import android.text.Html;
+import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,6 +22,7 @@ import com.example.igenerationmobile.R;
 import com.example.igenerationmobile.http.HTTPMethods;
 import com.example.igenerationmobile.model.ProjectID;
 import com.example.igenerationmobile.model.Token;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.squareup.picasso.Picasso;
@@ -30,21 +35,17 @@ public class ViewProject extends Fragment {
 
     private final ObjectMapper mapper = new ObjectMapper();
     private ImageView projectImage;
-
     private TextView Created;
-
     private TextView Place;
-
     private TextView Rating;
     private BottomNavigationView bottomNavigationView;
-
-    private String token;
-
+    private Toolbar toolbar;
+    private TextView nameProject;
+    private TextView Description;
+    private Token token;
     private Integer project_id;
 
-    public ViewProject(String token, Integer project_id) {
-        this.token = token;
-        this.project_id = project_id;
+    public ViewProject() {
     }
 
 
@@ -52,10 +53,10 @@ public class ViewProject extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        new HTTPProcess().execute();
     }
 
     @Override
+    @SuppressWarnings({"deprecation"})
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_view_project, container, false);
@@ -64,20 +65,36 @@ public class ViewProject extends Fragment {
         Created = view.findViewById(R.id.Created);
         Place = view.findViewById(R.id.Place);
         Rating = view.findViewById(R.id.Rating);
+        nameProject = view.findViewById(R.id.nameProject);
+        Description = view.findViewById(R.id.Description);
+
         if (getActivity() != null) {
             bottomNavigationView = getActivity().findViewById(R.id.bottomNavigationView2);
+
+            toolbar = getActivity().findViewById(R.id.toolbar);
+            toolbar.setTitle("Обзор");
         }
+
+        SharedPreferences sharedPreferences = getActivity().getApplicationContext().getSharedPreferences("UserData", Context.MODE_PRIVATE);
+        try {
+            token = mapper.readValue(sharedPreferences.getString("token", ""), Token.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        project_id = sharedPreferences.getInt("project_id", -1);
+
+        new HTTPProcess().execute();
 
         return view;
     }
 
+    @SuppressLint("StaticFieldLeak")
+    @SuppressWarnings({"deprecation"})
     private class HTTPProcess extends AsyncTask<String, String, String> {
         @Override
         protected String doInBackground(String... strings) {
             try {
-                System.out.println(token);
-                Token tokenObj = mapper.readValue(token, Token.class);
-                return HTTPMethods.projectID(tokenObj, project_id);
+                return HTTPMethods.projectID(token, project_id);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -104,6 +121,19 @@ public class ViewProject extends Fragment {
                 Rating.setText(project.getTracks_title().isEmpty() ? "-" :
                         (double) project.getTracks_title().get(0).getRating() / 10.0 +
                         " - по траектории " + project.getTracks_title().get(0).getTitle());
+                nameProject.setText(project.getTitle());
+
+                Spanned spannedText;
+                String description = project.getDescription();
+
+                if (description == null) {
+                    Description.setText("...");
+
+                } else {
+                    spannedText = Html.fromHtml(description, Html.FROM_HTML_MODE_COMPACT);
+
+                    Description.setText(spannedText.toString());
+                }
 
                 if (!project.getTracks_title().isEmpty()) {
                     MenuItem trajectory = bottomNavigationView.getMenu().findItem(R.id.trajectoryProject);
@@ -117,7 +147,8 @@ public class ViewProject extends Fragment {
                     SharedPreferences.Editor editor = sharedPreferences.edit();
 
                     editor.putInt("track_id", project.getTracks_title().isEmpty() ? -1 : project.getTracks_title().get(0).getTrack_id());
-                    editor.putInt("project_id", project.getProject_id());
+                    editor.putInt("project_id", project.getId());
+                    editor.putString("name_trajectory", project.getTracks_title().isEmpty() ? "Траектория" : project.getTracks_title().get(0).getTitle());
                     editor.apply();
                 }
 

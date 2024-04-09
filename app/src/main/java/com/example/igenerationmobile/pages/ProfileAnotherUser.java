@@ -6,6 +6,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -38,10 +39,10 @@ public class ProfileAnotherUser extends AppCompatActivity {
     private TextView rating;
     private TextView countProjectsAnotherUser;
     private TextView IGNRole;
-    private Toolbar toolbar;
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Override
+    @SuppressWarnings({"deprecation"})
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_another_user);
@@ -67,7 +68,7 @@ public class ProfileAnotherUser extends AppCompatActivity {
         new HTTPProcess().execute();
         new getCountProjects().execute();
 
-        toolbar = findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
 
         setSupportActionBar(toolbar);
 
@@ -86,6 +87,8 @@ public class ProfileAnotherUser extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @SuppressLint("StaticFieldLeak")
+    @SuppressWarnings({"deprecation"})
     private class HTTPProcess extends AsyncTask<String, String, String> {
         @Override
         protected String doInBackground(String... strings) {
@@ -159,6 +162,8 @@ public class ProfileAnotherUser extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("StaticFieldLeak")
+    @SuppressWarnings({"deprecation"})
     private class HTTPImage extends AsyncTask<String, Bitmap, Bitmap> {
         @Override
         protected Bitmap doInBackground(String... strings) {
@@ -176,6 +181,8 @@ public class ProfileAnotherUser extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("StaticFieldLeak")
+    @SuppressWarnings({"deprecation"})
     private class getCountProjects extends AsyncTask<String, String, String> {
 
         @Override

@@ -1,5 +1,6 @@
 package com.example.igenerationmobile.fragments.myProject;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -7,6 +8,7 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -43,22 +45,15 @@ import java.util.concurrent.ConcurrentMap;
 public class UsersProject extends Fragment implements RecyclerInterface {
 
     private Token token;
-
     private Integer project_id;
-
     private Integer user_id;
-
     private Integer author_id;
-
     private RecyclerView recyclerView;
-
+    private Toolbar toolbar;
     private ProjectsAdapter adapter;
+    private final ObjectMapper mapper = new ObjectMapper();
 
-    private ObjectMapper mapper = new ObjectMapper();
-
-    public UsersProject(Integer project_id, Integer author_id) {
-        this.project_id = project_id;
-        this.author_id = author_id;
+    public UsersProject() {
     }
 
 
@@ -69,6 +64,7 @@ public class UsersProject extends Fragment implements RecyclerInterface {
     }
 
     @Override
+    @SuppressWarnings({"deprecation"})
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_users_project, container, false);
@@ -82,14 +78,20 @@ public class UsersProject extends Fragment implements RecyclerInterface {
 
         if (getActivity() != null) {
             SharedPreferences sharedPreferences = getActivity().getApplicationContext().getSharedPreferences("UserData", Context.MODE_PRIVATE);
+
             user_id = sharedPreferences.getInt("id", -1);
+            project_id = sharedPreferences.getInt("project_id", -1);
+            author_id = sharedPreferences.getInt("author_id", -1);
+
             try {
                 token = mapper.readValue(sharedPreferences.getString("token", ""), Token.class);
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
-            System.out.println(user_id);
-            System.out.println(author_id);
+
+            toolbar = getActivity().findViewById(R.id.toolbar);
+            toolbar.setTitle("Участники");
+
         }
 
         new HTTPProcess().execute();
@@ -128,6 +130,8 @@ public class UsersProject extends Fragment implements RecyclerInterface {
         startActivity(intent);
     }
 
+    @SuppressLint("StaticFieldLeak")
+    @SuppressWarnings({"deprecation"})
     private class HTTPProcess extends AsyncTask<String, ConcurrentMap<String, Bitmap>, ConcurrentMap<String, Bitmap>> {
 
         private JSONArray jsonArray;
@@ -185,13 +189,12 @@ public class UsersProject extends Fragment implements RecyclerInterface {
 
                     adapter.users.add(new UserProject(
                             map.get(fileName),
-                            new StringBuilder()
-                                    .append(StringEscapeUtils.unescapeJava(user.getString("fname")))
-                                    .append(" ")
-                                    .append(StringEscapeUtils.unescapeJava(user.getString("iname")).charAt(0))
-                                    .append(". ")
-                                    .append(StringEscapeUtils.unescapeJava(user.getString("oname")).charAt(0))
-                                    .append(".").toString(),
+                            StringEscapeUtils.unescapeJava(user.getString("fname")) +
+                                    " " +
+                                    StringEscapeUtils.unescapeJava(user.getString("iname")).charAt(0) +
+                                    ". " +
+                                    StringEscapeUtils.unescapeJava(user.getString("oname")).charAt(0) +
+                                    ".",
                             roleInProject,
                             user.getInt("user_id"),
                             fileName,

@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -27,9 +28,10 @@ import java.io.IOException;
 public class MainPage extends AppCompatActivity {
 
     private ActivityMainPageBinding binding;
+    private final ObjectMapper mapper = new ObjectMapper();
+    private int state;
 
-    private ObjectMapper mapper = new ObjectMapper();
-
+    @SuppressLint("NonConstantResourceId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,20 +48,28 @@ public class MainPage extends AppCompatActivity {
             ReplaceFragment(new YourProfile());
             BottomNavigationView view = findViewById(R.id.bottomMainPageView);
             view.setSelectedItemId(R.id.yourProfile);
+            state = R.id.yourProfile;
         } else {
             ReplaceFragment(new AllProjects());
+            state = R.id.allProjects;
         }
 
         binding.bottomMainPageView.setOnItemSelectedListener(v -> {
             switch(v.getItemId()) {
                 case R.id.allProjects:
+                    if (state == R.id.allProjects) break;
                     ReplaceFragment(new AllProjects());
+                    state = R.id.allProjects;
                     break;
                 case R.id.allUsers:
+                    if (state == R.id.allUsers) break;
                     ReplaceFragment(new AllUsers());
+                    state = R.id.allUsers;
                     break;
                 case R.id.yourProfile:
+                    if (state == R.id.yourProfile) break;
                     ReplaceFragment(new YourProfile());
+                    state = R.id.yourProfile;
                     break;
             }
             return true;
@@ -74,6 +84,8 @@ public class MainPage extends AppCompatActivity {
         fragmentTransaction.commit();
     }
 
+    @SuppressLint("StaticFieldLeak")
+    @SuppressWarnings({"deprecation"})
     private class getUserID extends AsyncTask<String, String, String> {
         @Override
         protected String doInBackground(String... strings) {

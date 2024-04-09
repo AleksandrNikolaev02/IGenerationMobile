@@ -1,5 +1,6 @@
 package com.example.igenerationmobile.fragments.projectAnotherUser;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -24,7 +25,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
-import java.util.Objects;
 
 
 public class ViewProjectAnotherUser extends Fragment {
@@ -51,6 +51,7 @@ public class ViewProjectAnotherUser extends Fragment {
     }
 
     @Override
+    @SuppressWarnings({"deprecation"})
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_view_project_another_user, container, false);
@@ -84,6 +85,7 @@ public class ViewProjectAnotherUser extends Fragment {
         return view;
     }
 
+    @SuppressLint("StaticFieldLeak")
     @SuppressWarnings({"deprecation"})
     private class HTTPProcess extends AsyncTask<String, String, String> {
         @Override

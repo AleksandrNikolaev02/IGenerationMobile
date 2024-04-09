@@ -1,8 +1,12 @@
 package com.example.igenerationmobile.fragments.myProject;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -15,6 +19,7 @@ import com.example.igenerationmobile.adapters.StagesAdapter;
 import com.example.igenerationmobile.http.HTTPMethods;
 import com.example.igenerationmobile.model.ExpandableListModel.Stage;
 import com.example.igenerationmobile.model.Token;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.apache.commons.text.StringEscapeUtils;
@@ -31,50 +36,59 @@ import java.util.Map;
 public class TrajectoryProject extends Fragment {
 
     private ExpandableListView expandableListView;
-
+    private Toolbar toolbar;
     private StagesAdapter adapter;
-
     private Integer project_id;
-
     private Integer track_id;
-
-    private String token;
-
+    private Token token;
     private final ObjectMapper mapper = new ObjectMapper();
 
-    public TrajectoryProject(String token, Integer project_id, Integer track_id) {
-        this.token = token;
-        this.project_id = project_id;
-        this.track_id = track_id;
+    public TrajectoryProject() {
     }
-
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
-        new getSections().execute();
     }
 
+    @SuppressWarnings({"deprecation"})
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_trajectory_project, container, false);
+
+        if (getActivity() != null) {
+            SharedPreferences userData = getActivity().getApplicationContext().getSharedPreferences("UserData", Context.MODE_PRIVATE);
+            SharedPreferences track = getActivity().getApplicationContext().getSharedPreferences("pages.my_project_page", Context.MODE_PRIVATE);
+
+            try {
+                token = mapper.readValue(userData.getString("token", ""), Token.class);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+            project_id = track.getInt("project_id", -1);
+            track_id = track.getInt("track_id", -1);
+
+            toolbar = getActivity().findViewById(R.id.toolbar);
+            toolbar.setTitle(track.getString("name_trajectory", ""));
+        }
+
+        new getSections().execute();
 
         expandableListView = view.findViewById(R.id.ExpandableListView);
 
         return view;
     }
 
+    @SuppressLint("StaticFieldLeak")
+    @SuppressWarnings({"deprecation"})
     private class getSections extends AsyncTask<String, String, String> {
 
         @Override
         protected String doInBackground(String... strings) {
             try {
-                Token tokenObj = mapper.readValue(token, Token.class);
-                return HTTPMethods.sections(tokenObj, track_id, project_id);
+                return HTTPMethods.sections(token, track_id, project_id);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -123,7 +137,7 @@ public class TrajectoryProject extends Fragment {
                     }
                 }
 
-                adapter = new StagesAdapter(getActivity().getApplicationContext(), stages, childs);
+                adapter = new StagesAdapter(requireActivity().getApplicationContext(), stages, childs);
 
                 expandableListView.setAdapter(adapter);
 

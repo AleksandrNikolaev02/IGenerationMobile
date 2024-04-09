@@ -1,13 +1,17 @@
 package com.example.igenerationmobile.pages;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.MenuItem;
 
 import com.example.igenerationmobile.R;
 import com.example.igenerationmobile.databinding.ActivityMyProjectPageBinding;
@@ -18,46 +22,52 @@ import com.example.igenerationmobile.fragments.myProject.ViewProject;
 
 public class MyProjectPage extends AppCompatActivity {
 
-    private String token;
-    private Integer project_id;
-
-    private Integer author_id;
-
     private Integer track_id;
-
     private ActivityMyProjectPageBinding binding;
+    private Toolbar toolbar;
+    private int state;
 
-
+    @SuppressLint("NonConstantResourceId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMyProjectPageBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("UserData", Context.MODE_PRIVATE);
-        token = sharedPreferences.getString("token", "");
-        project_id = sharedPreferences.getInt("project_id", -1);
-        author_id = sharedPreferences.getInt("author_id", -1);
+        toolbar = findViewById(R.id.toolbar);
 
+        setSupportActionBar(toolbar);
 
-        ReplaceFragment(new ViewProject(token, project_id));
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+
+        ReplaceFragment(new ViewProject());
+        state = R.id.viewProject;
 
         binding.bottomNavigationView2.setOnItemSelectedListener(item -> {
 
             switch (item.getItemId()) {
                 case R.id.viewProject:
-                    ReplaceFragment(new ViewProject(token, project_id));
+                    if (state == R.id.viewProject) break;
+                    ReplaceFragment(new ViewProject());
+                    state = R.id.viewProject;
                     break;
                 case R.id.usersProject:
-                    ReplaceFragment(new UsersProject(project_id, author_id));
+                    if (state == R.id.usersProject) break;
+                    ReplaceFragment(new UsersProject());
+                    state = R.id.usersProject;
                     break;
                 case R.id.trajectoryProject:
+                    if (state == R.id.trajectoryProject) break;
+                    state = R.id.trajectoryProject;
                     SharedPreferences track = getApplicationContext().getSharedPreferences("pages.my_project_page", Context.MODE_PRIVATE);
                     track_id = track.getInt("track_id", -1);
                     if (track_id == -1) {
                         ReplaceFragment(new EmptyProject());
                     } else {
-                        ReplaceFragment(new TrajectoryProject(token, project_id, track_id));
+                        ReplaceFragment(new TrajectoryProject());
                     }
                     break;
             }
@@ -65,6 +75,15 @@ public class MyProjectPage extends AppCompatActivity {
             return true;
         });
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void ReplaceFragment(Fragment fragment) {

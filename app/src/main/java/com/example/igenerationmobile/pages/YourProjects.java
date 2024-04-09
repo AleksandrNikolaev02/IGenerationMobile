@@ -7,12 +7,12 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,7 +36,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -62,6 +61,7 @@ public class YourProjects extends AppCompatActivity implements RecyclerInterface
     }
 
     @Override
+    @SuppressWarnings({"deprecation"})
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_your_projects);
@@ -91,6 +91,7 @@ public class YourProjects extends AppCompatActivity implements RecyclerInterface
         sessions.setSelection(sessionAdapter.getCount() - 1);
 
         sessions.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 defaultSession = (String) parent.getItemAtPosition(position);
@@ -233,6 +234,8 @@ public class YourProjects extends AppCompatActivity implements RecyclerInterface
         }
     }
 
+    @SuppressLint("StaticFieldLeak")
+    @SuppressWarnings({"deprecation"})
     private class getProjects extends AsyncTask<String, String, String> {
         @Override
         protected String doInBackground(String... strings) {
