@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
@@ -17,6 +18,9 @@
         android:theme="@style/Theme.IGenerationMobile"
         tools:targetApi="31">
         <activity
+            android:name=".pages.YourOptions"
+            android:exported="false" />
+        <activity
             android:name=".pages.ProjectAnotherUser"
             android:exported="false" />
         <activity
@@ -29,17 +33,14 @@
         <activity
             android:name=".pages.MainPage"
             android:exported="true"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".pages.ProfileAnotherUser"
             android:exported="true" />
         <activity
             android:name=".pages.MyProjectPage"
             android:exported="true" />
-        <activity
-            android:name=".pages.ProfileNew"
-            android:exported="true"
-            android:screenOrientation="portrait" />
         <activity
             android:name=".pages.LoginPage"
             android:exported="true">

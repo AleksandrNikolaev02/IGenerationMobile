@@ -109,6 +109,7 @@ public class MainPage extends AppCompatActivity {
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putInt("id", user.getId());
                 editor.putInt("status", user.getStatus());
+                editor.putInt("mode", user.getMode());
                 editor.apply();
 
             } catch (JsonProcessingException e) {

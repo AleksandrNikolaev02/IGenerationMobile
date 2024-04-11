@@ -2,6 +2,7 @@ package com.example.igenerationmobile.fragments.mainPage;
 
 import static android.view.View.TEXT_ALIGNMENT_CENTER;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -36,6 +37,7 @@ import com.example.igenerationmobile.model.Achievement;
 import com.example.igenerationmobile.model.MyAchievement;
 import com.example.igenerationmobile.model.Token;
 import com.example.igenerationmobile.pages.EditProfilePage;
+import com.example.igenerationmobile.pages.YourOptions;
 import com.example.igenerationmobile.pages.YourProjects;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -104,6 +106,7 @@ public class YourProfile extends Fragment {
     }
 
     @Override
+    @SuppressWarnings({"deprecation"})
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view  = inflater.inflate(R.layout.fragment_your_profile, container, false);
@@ -142,10 +145,16 @@ public class YourProfile extends Fragment {
 
         new getCnt().execute();
 
-        new getAchivments().execute();
+        new getAchievements().execute();
 
         projects.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), YourProjects.class);
+
+            startActivity(intent);
+        });
+
+        settings.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), YourOptions.class);
 
             startActivity(intent);
         });
@@ -234,6 +243,8 @@ public class YourProfile extends Fragment {
         return view;
     }
 
+    @SuppressLint("StaticFieldLeak")
+    @SuppressWarnings({"deprecation"})
     private class getCnt extends AsyncTask<String, String, String> {
         @Override
         protected String doInBackground(String... strings) {
@@ -258,7 +269,9 @@ public class YourProfile extends Fragment {
         }
     }
 
-    private class getAchivments extends AsyncTask<String, String, HashMap<Achievement, String>> {
+    @SuppressLint("StaticFieldLeak")
+    @SuppressWarnings({"deprecation"})
+    private class getAchievements extends AsyncTask<String, String, HashMap<Achievement, String>> {
 
 
         @Override
@@ -293,7 +306,7 @@ public class YourProfile extends Fragment {
         @Override
         protected void onPostExecute(HashMap<Achievement, String> strings) {
             super.onPostExecute(strings);
-            LinearLayout imageContainer = getActivity().findViewById(R.id.linear_layout_id);
+            LinearLayout imageContainer = requireActivity().findViewById(R.id.linear_layout_id);
 
             for (Map.Entry<Achievement, String> entry : strings.entrySet()) {
 
