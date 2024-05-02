@@ -76,4 +76,18 @@
     <string name="success">Данные сохранены!</string>
 
     <string name="todo">todo</string>
+
+    <string-array name="role">
+        <item>Наставник</item>
+        <item>Эксперт</item>
+        <item>Администратор</item>
+        <item>Заказчик</item>
+        <item>Не выбрано</item>
+    </string-array>
+
+    <string-array name="sort">
+        <item>По дате регистрации</item>
+        <item>По рейтингу</item>
+    </string-array>
+
 </resources>

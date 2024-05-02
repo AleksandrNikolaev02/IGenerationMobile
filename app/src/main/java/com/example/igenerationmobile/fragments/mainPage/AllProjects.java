@@ -253,7 +253,7 @@ public class AllProjects extends Fragment implements RecyclerInterface {
                 if (!loadTrajectory) {
                     List<String> listSessions = new ArrayList<>(uniqSessions);
 
-                    trajectoryAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listSessions);
+                    trajectoryAdapter = new ArrayAdapter<>(requireActivity(), android.R.layout.simple_spinner_item, listSessions);
                     trajectoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                     trajectory.setAdapter(trajectoryAdapter);
                     trajectory.setSelection(listSessions.indexOf("Не выбрано"));
