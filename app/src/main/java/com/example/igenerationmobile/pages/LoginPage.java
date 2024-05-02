@@ -2,6 +2,7 @@ package com.example.igenerationmobile.pages;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -24,6 +25,7 @@ public class LoginPage extends AppCompatActivity {
     private EditText passwordField;
 
     @Override
+    @SuppressWarnings({"deprecation"})
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -48,6 +50,8 @@ public class LoginPage extends AppCompatActivity {
 
     }
 
+    @SuppressLint("StaticFieldLeak")
+    @SuppressWarnings({"deprecation"})
     private class HTTPProcess extends AsyncTask<String, String, String> {
         private boolean isProcessed = false;
 

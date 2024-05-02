@@ -1,5 +1,6 @@
 package com.example.igenerationmobile.fragments.mainPage;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -79,6 +80,8 @@ public class AllProjects extends Fragment implements RecyclerInterface {
     }
 
     @Override
+    @SuppressWarnings({"deprecation"})
+    @SuppressLint("NotifyDataSetChanged")
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_all_projects, container, false);
@@ -177,6 +180,8 @@ public class AllProjects extends Fragment implements RecyclerInterface {
         startActivity(intent);
     }
 
+    @SuppressLint("StaticFieldLeak")
+    @SuppressWarnings({"deprecation"})
     private class getAllProjects extends AsyncTask<String, String, String> {
         @Override
         protected String doInBackground(String... strings) {

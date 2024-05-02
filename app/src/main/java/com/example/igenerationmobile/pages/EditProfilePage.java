@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.Toolbar;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -42,6 +43,7 @@ public class EditProfilePage extends AppCompatActivity {
     final private ObjectMapper mapper = new ObjectMapper();
 
     @Override
+    @SuppressWarnings({"deprecation"})
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile_page);
@@ -131,6 +133,8 @@ public class EditProfilePage extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @SuppressLint("StaticFieldLeak")
+    @SuppressWarnings({"deprecation"})
     private class updateProfile extends AsyncTask<JSONObject, String, String> {
 
         @Override

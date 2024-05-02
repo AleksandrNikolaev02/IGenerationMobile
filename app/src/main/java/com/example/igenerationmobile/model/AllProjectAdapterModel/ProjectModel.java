@@ -6,13 +6,9 @@ import java.util.List;
 public class ProjectModel {
 
     private String projectImageURL;
-
     private int rating;
-
     private String projectName;
-
     private String title;
-
     private int project_id;
     private List<Integer> users;
     private int author_id;
