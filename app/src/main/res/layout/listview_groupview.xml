@@ -10,9 +10,12 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:paddingLeft="30dp"
-        android:layout_margin="8dp"
-        >
-
+        android:textColor="@color/black"
+        android:text="@string/todo"
+        android:fontFamily="@font/poppins_medium"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:layout_margin="8dp">
     </TextView>
 
 

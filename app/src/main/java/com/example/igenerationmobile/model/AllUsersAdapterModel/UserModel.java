@@ -9,13 +9,15 @@ public class UserModel {
     private int rating;
     private int status;
     private LocalDateTime dateTime;
+    private int user_id;
 
-    public UserModel(String imageURL, String name, int rating, int status, LocalDateTime dateTime) {
+    public UserModel(String imageURL, String name, int rating, int status, LocalDateTime dateTime, int users_id) {
         this.imageURL = imageURL;
         this.name = name;
         this.rating = rating;
         this.status = status;
         this.dateTime = dateTime;
+        this.user_id = users_id;
     }
 
     public String getImageURL() {
@@ -36,5 +38,9 @@ public class UserModel {
 
     public LocalDateTime getDateTime() {
         return dateTime;
+    }
+
+    public int getUser_id() {
+        return user_id;
     }
 }

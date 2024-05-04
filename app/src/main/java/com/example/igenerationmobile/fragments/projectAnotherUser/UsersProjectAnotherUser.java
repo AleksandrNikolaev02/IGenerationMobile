@@ -1,5 +1,6 @@
 package com.example.igenerationmobile.fragments.projectAnotherUser;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -63,6 +64,7 @@ public class UsersProjectAnotherUser extends Fragment implements RecyclerInterfa
     }
 
     @Override
+    @SuppressWarnings({"deprecation"})
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_users_project_another_user, container, false);
@@ -128,6 +130,7 @@ public class UsersProjectAnotherUser extends Fragment implements RecyclerInterfa
     }
 
     @SuppressWarnings({"deprecation"})
+    @SuppressLint("StaticFieldLeak")
     private class HTTPProcess extends AsyncTask<String, ConcurrentMap<String, Bitmap>, ConcurrentMap<String, Bitmap>> {
 
         private JSONArray jsonArray;

@@ -8,6 +8,8 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import androidx.core.content.res.ResourcesCompat;
+
 import com.example.igenerationmobile.R;
 import com.example.igenerationmobile.model.ExpandableListModel.Stage;
 
@@ -81,8 +83,12 @@ public class StagesAdapter extends BaseExpandableListAdapter {
 
     @Override
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
-        String description = childData.get(groupData.get(groupPosition)).get(childPosition).getTitle();
-        Float rating = childData.get(groupData.get(groupPosition)).get(childPosition).getRating();
+        Stage stage = childData.get(groupData.get(groupPosition)).get(childPosition);
+
+        String description = stage.getTitle();
+        Float rating = stage.getRating();
+        boolean isTitle = stage.isTitle();
+        boolean isComment = stage.isComment();
 
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -90,13 +96,24 @@ public class StagesAdapter extends BaseExpandableListAdapter {
         }
 
         TextView textGroup = convertView.findViewById(R.id.description);
+        TextView ratingValue = convertView.findViewById(R.id.rating);
+        RatingBar bar = convertView.findViewById(R.id.ratingBar_small);
+
         textGroup.setText(description);
 
-        TextView ratingValue = convertView.findViewById(R.id.rating);
-        ratingValue.setText(String.format(Locale.US, "%.1f", (float) rating));
-
-        RatingBar bar = convertView.findViewById(R.id.ratingBar_small);
-        bar.setRating(rating);
+        if (isTitle) {
+            textGroup.setTypeface(ResourcesCompat.getFont(context, R.font.poppins_medium));
+            ratingValue.setVisibility(View.GONE);
+            bar.setVisibility(View.GONE);
+        } else {
+            if (isComment) {
+                ratingValue.setVisibility(View.GONE);
+                bar.setVisibility(View.GONE);
+            } else {
+                ratingValue.setText(String.format(Locale.US, "%.1f", rating));
+                bar.setRating(rating);
+            }
+        }
 
         return convertView;
     }

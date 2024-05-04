@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
@@ -16,8 +17,12 @@ import android.widget.ExpandableListView;
 
 import com.example.igenerationmobile.R;
 import com.example.igenerationmobile.adapters.StagesAdapter;
+import com.example.igenerationmobile.dto.FieldDto;
 import com.example.igenerationmobile.http.HTTPMethods;
+import com.example.igenerationmobile.interfaces.ApiService;
 import com.example.igenerationmobile.model.ExpandableListModel.Stage;
+import com.example.igenerationmobile.model.Field;
+import com.example.igenerationmobile.model.Pair;
 import com.example.igenerationmobile.model.Token;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,6 +37,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.jackson.JacksonConverterFactory;
 
 public class TrajectoryProject extends Fragment {
 
@@ -42,6 +54,9 @@ public class TrajectoryProject extends Fragment {
     private Integer track_id;
     private Token token;
     private final ObjectMapper mapper = new ObjectMapper();
+    private Map<Integer, List<Integer>> comments = new HashMap<>();
+    private Map<Integer, String> numericStages = new HashMap<>();
+    private Map<Integer, Boolean> stateGroup = new HashMap<>();
 
     public TrajectoryProject() {
     }
@@ -117,6 +132,8 @@ public class TrajectoryProject extends Fragment {
                         JSONArray criteria_rel = section.getJSONArray("criteria_rel");
 
                         List<Stage> tmp = new ArrayList<>();
+                        tmp.add(new Stage("Оценки:", null, true, false));
+
                         for (int j = 0; j < criteria_rel.length(); j++) {
                             JSONObject criteria = criteria_rel.getJSONObject(j);
 
@@ -131,9 +148,21 @@ public class TrajectoryProject extends Fragment {
                                 value += rate.getInt("value");
                             }
 
-                            tmp.add(new Stage(title, (float) (value) / (float) rates.length()));
+                            tmp.add(new Stage(title, (float) (value) / (float) rates.length(), false, false));
                         }
                         childs.put(stage, tmp);
+
+                        numericStages.put(stages.size() - 1, stage);
+                        stateGroup.put(stages.size() - 1, false);
+                    } else if (level == 1) {
+                        JSONArray fields_edited = section.getJSONArray("fields_edited");
+
+                        if (fields_edited.length() != 0) {
+                            int id = section.getInt("id");
+
+                            List<Integer> local_comments = comments.computeIfAbsent(stages.size() - 1, k -> new ArrayList<>());
+                            local_comments.add(id);
+                        }
                     }
                 }
 
@@ -145,10 +174,9 @@ public class TrajectoryProject extends Fragment {
                     int lastExpandedPosition = -1;
                     @Override
                     public void onGroupExpand(int i) {
-                        if(lastExpandedPosition != -1 && i != lastExpandedPosition){
-                            expandableListView.collapseGroup(lastExpandedPosition);
-                        }
-                        lastExpandedPosition = i;
+                        if (stateGroup.get(i).equals(true)) return;
+
+                        new getField().execute(i);
                     }
                 });
 
@@ -158,4 +186,98 @@ public class TrajectoryProject extends Fragment {
 
         }
     }
+
+    @SuppressLint("StaticFieldLeak")
+    @SuppressWarnings({"deprecation"})
+    public class getField extends AsyncTask<Integer, String, Pair> {
+
+        @Override
+        protected Pair doInBackground(Integer... strings) {
+            int i = strings[0];
+
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(HTTPMethods.urlApi + "/")
+                    .addConverterFactory(JacksonConverterFactory.create(mapper))
+                    .build();
+
+            ApiService apiService = retrofit.create(ApiService.class);
+
+            List<Integer> group_comments = comments.get(i);
+
+            List<String> expert_comments = new ArrayList<>();
+
+            if (group_comments != null) {
+                CountDownLatch latch = new CountDownLatch(group_comments.size());
+
+                for (Integer id : group_comments) {
+                    FieldDto dto = new FieldDto();
+
+                    dto.setProject_id(project_id);
+                    dto.setSection_id(id);
+
+                    String tokenStr = token.getTokenType() + " " + token.getAccessToken();
+
+                    Call<List<Field>> call = apiService.fieldsWithContent(tokenStr, dto);
+
+                    call.enqueue(new Callback<>() {
+                        @Override
+                        public void onResponse(@NonNull Call<List<Field>> call, @NonNull Response<List<Field>> response) {
+                            if (response.isSuccessful()) {
+                                List<Field> fields = response.body();
+
+                                if (fields != null) {
+                                    for (Field field : fields) {
+                                        if (field.getType() == 7 && field.getContent() != null) {
+                                            expert_comments.add(field.getContent());
+                                        }
+                                    }
+                                }
+                            }
+                            latch.countDown();
+                        }
+
+                        @Override
+                        public void onFailure(@NonNull Call<List<Field>> call, @NonNull Throwable t) {
+                            System.out.println("Пиздец...");
+                            latch.countDown();
+                        }
+                    });
+                }
+
+                try {
+                    latch.await();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            return new Pair(expert_comments, i);
+        }
+
+        @Override
+        protected void onPostExecute(Pair pair) {
+            super.onPostExecute(pair);
+
+            List<String> expert_comments = pair.getExpert_comments();
+            int i = pair.getI();
+
+            String stage = numericStages.get(i);
+            List<Stage> stage_childs = adapter.childData.get(stage);
+            stage_childs.add(new Stage("Комментарии:", null, true, false));
+
+            System.out.println(expert_comments);
+
+            if (expert_comments.isEmpty()) {
+                stage_childs.add(new Stage("Комментариев нет", null, false, true));
+            } else {
+                for (String comment : expert_comments) {
+                    stage_childs.add(new Stage(comment, null, false, true));
+                }
+            }
+
+            stateGroup.put(i, true);
+
+            adapter.notifyDataSetChanged();
+        }
+    }
+
 }

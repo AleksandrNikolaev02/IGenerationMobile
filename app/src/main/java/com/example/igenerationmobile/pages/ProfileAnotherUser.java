@@ -124,26 +124,32 @@ public class ProfileAnotherUser extends AppCompatActivity {
                         IGNRole.setText("Участник");
                         IGNRole.setBackgroundColor(getColor(R.color.participant));
                         IGNRole.setTextAlignment(TEXT_ALIGNMENT_CENTER);
+                        shapeableImageView.setBackgroundColor(getColor(R.color.participant));
                         break;
                     case 3:
                         IGNRole.setText("Наставник");
                         IGNRole.setBackgroundColor(getColor(R.color.mentor));
+                        shapeableImageView.setBackgroundColor(getColor(R.color.mentor));
                         break;
                     case 4:
                         IGNRole.setText("Эксперт");
                         IGNRole.setBackgroundColor(getColor(R.color.expert));
+                        shapeableImageView.setBackgroundColor(getColor(R.color.expert));
                         break;
                     case 5:
                         IGNRole.setText("Администратор");
                         IGNRole.setBackgroundColor(getColor(R.color.administrator));
+                        shapeableImageView.setBackgroundColor(getColor(R.color.administrator));
                         break;
                     case 7:
                         IGNRole.setText("Заказчик");
                         IGNRole.setBackgroundColor(getColor(R.color.customer));
+                        shapeableImageView.setBackgroundColor(getColor(R.color.customer));
                         break;
                     default:
                         IGNRole.setText("Другой");
                         IGNRole.setBackgroundColor(getColor(R.color.participant));
+                        shapeableImageView.setBackgroundColor(getColor(R.color.participant));
                         break;
                 }
 

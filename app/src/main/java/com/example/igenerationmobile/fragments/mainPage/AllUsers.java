@@ -3,7 +3,9 @@ package com.example.igenerationmobile.fragments.mainPage;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
@@ -12,6 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +30,8 @@ import com.example.igenerationmobile.http.HTTPMethods;
 import com.example.igenerationmobile.interfaces.RecyclerInterface;
 import com.example.igenerationmobile.model.AllUsersAdapterModel.UserModel;
 import com.example.igenerationmobile.model.Token;
+import com.example.igenerationmobile.pages.MainPage;
+import com.example.igenerationmobile.pages.ProfileAnotherUser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -35,14 +40,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -118,7 +122,18 @@ public class AllUsers extends Fragment implements RecyclerInterface {
 
     @Override
     public void onItemClick(int position) {
+        Intent intent;
+        if (adapter.users.get(position).getUser_id() == user_id) {
+            intent = new Intent(getActivity(), MainPage.class);
 
+            intent.putExtra("fragmentID", R.id.yourProfile);
+
+        } else {
+            intent = new Intent(requireActivity(), ProfileAnotherUser.class);
+
+            intent.putExtra("user_id", adapter.users.get(position).getUser_id());
+        }
+        startActivity(intent);
     }
 
     @SuppressLint("StaticFieldLeak")
@@ -157,12 +172,13 @@ public class AllUsers extends Fragment implements RecyclerInterface {
                             StringEscapeUtils.unescapeJava(user.getString("oname"));
                     int rating = user.getInt("rating");
                     int status = user.getInt("status");
+                    int id = user.getInt("id");
                     if (user.getString("email_verified_at").equals("null")) {
-                        notConfirmedUsers.add(new UserModel(imageURL, name, rating, status, null));
+                        notConfirmedUsers.add(new UserModel(imageURL, name, rating, status, null, id));
                     } else {
                         LocalDateTime dateTime = LocalDateTime.parse(user.getString("email_verified_at"), formatter);
 
-                        users.add(new UserModel(imageURL, name, rating, status, dateTime));
+                        users.add(new UserModel(imageURL, name, rating, status, dateTime, id));
                     }
                 }
                 usersFiltered = new ArrayList<>(users);
