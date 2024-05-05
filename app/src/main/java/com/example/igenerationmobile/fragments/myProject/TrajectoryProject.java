@@ -14,6 +14,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
+import android.util.Pair;
+import android.widget.Toast;
 
 import com.example.igenerationmobile.R;
 import com.example.igenerationmobile.adapters.StagesAdapter;
@@ -22,7 +24,6 @@ import com.example.igenerationmobile.http.HTTPMethods;
 import com.example.igenerationmobile.interfaces.ApiService;
 import com.example.igenerationmobile.model.ExpandableListModel.Stage;
 import com.example.igenerationmobile.model.Field;
-import com.example.igenerationmobile.model.Pair;
 import com.example.igenerationmobile.model.Token;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -189,10 +190,10 @@ public class TrajectoryProject extends Fragment {
 
     @SuppressLint("StaticFieldLeak")
     @SuppressWarnings({"deprecation"})
-    public class getField extends AsyncTask<Integer, String, Pair> {
+    public class getField extends AsyncTask<Integer, String, Pair<List<String>, Integer>> {
 
         @Override
-        protected Pair doInBackground(Integer... strings) {
+        protected Pair<List<String>, Integer> doInBackground(Integer... strings) {
             int i = strings[0];
 
             Retrofit retrofit = new Retrofit.Builder()
@@ -238,7 +239,7 @@ public class TrajectoryProject extends Fragment {
 
                         @Override
                         public void onFailure(@NonNull Call<List<Field>> call, @NonNull Throwable t) {
-                            System.out.println("Пиздец...");
+                            Toast.makeText(getActivity(), "Загрузка комментариев произошла с ошибкой", Toast.LENGTH_LONG).show();
                             latch.countDown();
                         }
                     });
@@ -250,15 +251,15 @@ public class TrajectoryProject extends Fragment {
                     e.printStackTrace();
                 }
             }
-            return new Pair(expert_comments, i);
+            return new Pair<>(expert_comments, i);
         }
 
         @Override
-        protected void onPostExecute(Pair pair) {
+        protected void onPostExecute(Pair<List<String>, Integer> pair) {
             super.onPostExecute(pair);
 
-            List<String> expert_comments = pair.getExpert_comments();
-            int i = pair.getI();
+            List<String> expert_comments = pair.first;
+            int i = pair.second;
 
             String stage = numericStages.get(i);
             List<Stage> stage_childs = adapter.childData.get(stage);

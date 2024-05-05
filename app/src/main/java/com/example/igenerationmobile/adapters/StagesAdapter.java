@@ -68,6 +68,23 @@ public class StagesAdapter extends BaseExpandableListAdapter {
     }
 
     @Override
+    public int getChildType(int groupPosition, int childPosition) {
+        Stage stage = childData.get(groupData.get(groupPosition)).get(childPosition);
+        if (stage.isTitle()) {
+            return 0;
+        } else if (stage.isComment()) {
+            return 1;
+        } else {
+            return 2;
+        }
+    }
+
+    @Override
+    public int getChildTypeCount() {
+        return 3;
+    }
+
+    @Override
     public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
         String stageName = getGroup(groupPosition).toString();
         if (convertView == null) {
@@ -83,6 +100,7 @@ public class StagesAdapter extends BaseExpandableListAdapter {
 
     @Override
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
+        int type = getChildType(groupPosition, childPosition);
         Stage stage = childData.get(groupData.get(groupPosition)).get(childPosition);
 
         String description = stage.getTitle();
@@ -90,9 +108,20 @@ public class StagesAdapter extends BaseExpandableListAdapter {
         boolean isTitle = stage.isTitle();
         boolean isComment = stage.isComment();
 
-        if (convertView == null) {
+        if (convertView == null || (Integer)convertView.getTag() != type) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.listview_childview, null);
+            switch (type) {
+                case 0:
+                    convertView = inflater.inflate(R.layout.title_view, null);
+                    break;
+                case 1:
+                    convertView = inflater.inflate(R.layout.comment_view, null);
+                    break;
+                case 2:
+                    convertView = inflater.inflate(R.layout.grade_view, null);
+                    break;
+            }
+            convertView.setTag(type);
         }
 
         TextView textGroup = convertView.findViewById(R.id.description);
@@ -103,20 +132,16 @@ public class StagesAdapter extends BaseExpandableListAdapter {
 
         if (isTitle) {
             textGroup.setTypeface(ResourcesCompat.getFont(context, R.font.poppins_medium));
-            ratingValue.setVisibility(View.GONE);
-            bar.setVisibility(View.GONE);
-        } else {
-            if (isComment) {
-                ratingValue.setVisibility(View.GONE);
-                bar.setVisibility(View.GONE);
-            } else {
-                ratingValue.setText(String.format(Locale.US, "%.1f", rating));
-                bar.setRating(rating);
-            }
+        }
+
+        if (!isTitle && !isComment) {
+            ratingValue.setText(String.format(Locale.US, "%.1f", rating));
+            bar.setRating(rating);
         }
 
         return convertView;
     }
+
 
     @Override
     public boolean isChildSelectable(int groupPosition, int childPosition) {
