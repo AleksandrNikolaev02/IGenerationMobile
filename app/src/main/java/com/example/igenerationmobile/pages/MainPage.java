@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -28,10 +29,12 @@ import java.io.IOException;
 public class MainPage extends AppCompatActivity {
 
     private ActivityMainPageBinding binding;
+    BottomNavigationView view;
     private final ObjectMapper mapper = new ObjectMapper();
     private int state;
 
     @SuppressLint("NonConstantResourceId")
+    @SuppressWarnings({"deprecation"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,13 +43,13 @@ public class MainPage extends AppCompatActivity {
 
         binding = ActivityMainPageBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        view = findViewById(R.id.bottomMainPageView);
 
         Bundle bundle = getIntent().getExtras();
 
         if (bundle != null) {
             int fragmentID = bundle.getInt("fragmentID");
             ReplaceFragment(new YourProfile());
-            BottomNavigationView view = findViewById(R.id.bottomMainPageView);
             view.setSelectedItemId(R.id.yourProfile);
             state = R.id.yourProfile;
         } else {
@@ -71,9 +74,24 @@ public class MainPage extends AppCompatActivity {
                     ReplaceFragment(new YourProfile());
                     state = R.id.yourProfile;
                     break;
+                case R.id.yourProjects:
+                    Intent intent = new Intent(this, YourProjects.class);
+                    startActivityForResult(intent, 200);
+                    break;
             }
             return true;
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 200) {
+            if (resultCode == RESULT_OK) {
+                view.setSelectedItemId(state);
+            }
+        }
     }
 
     private void ReplaceFragment(Fragment fragment) {

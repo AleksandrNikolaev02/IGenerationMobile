@@ -19,4 +19,11 @@
         android:layout_height="wrap_content"
         android:title="@string/yourProfile"
         android:icon="@drawable/baseline_person_24"/>
+
+    <item
+        android:id="@+id/yourProjects"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:title="@string/yourProjects"
+        android:icon="@drawable/your_projects_icon"/>
 </menu>

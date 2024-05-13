@@ -45,12 +45,12 @@
                 app:layout_constraintTop_toTopOf="parent"
                 />
 
-            <ImageView
+            <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/imgProject"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:background="@color/IGNColorBackground"
-                android:src="@drawable/baseline_person_24"
+                android:background="@color/participant"
+                android:src="@color/grey"
                 android:scaleType="centerCrop"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/fio"

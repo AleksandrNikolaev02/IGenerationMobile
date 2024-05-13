@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.igenerationmobile.R;
 import com.example.igenerationmobile.interfaces.RecyclerInterface;
 import com.example.igenerationmobile.model.UserProject;
+import com.google.android.material.imageview.ShapeableImageView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,7 +84,7 @@ public class ProjectsAdapter extends RecyclerView.Adapter<ProjectsAdapter.Adapte
 
     public static class AdapterHolder extends RecyclerView.ViewHolder {
 
-        ImageView image;
+        ShapeableImageView image;
         TextView fio, role;
 
         public AdapterHolder(@NonNull View itemView, RecyclerInterface recyclerInterface) {

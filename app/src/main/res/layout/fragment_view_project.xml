@@ -36,6 +36,7 @@
                     android:layout_height="150dp"
                     android:layout_gravity="center"
                     android:id="@+id/projectImage"
+                    android:background="@color/participant"
                     android:scaleType="centerCrop"
                     android:src="@color/grey"/>
 
