@@ -29,4 +29,13 @@ public class Token {
     public String getExpiresAt() {
         return expires_at;
     }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "\"access_token\":\"" + access_token + '\"' +
+                ", \"token_type\":\"" + token_type + '\"' +
+                ", \"expires_at\":\"" + expires_at + '\"' +
+                '}';
+    }
 }

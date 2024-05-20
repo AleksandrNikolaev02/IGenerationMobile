@@ -23,6 +23,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
+import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
 public class HTTPMethods {
@@ -58,25 +59,17 @@ public class HTTPMethods {
 
         connection.connect();
 
-        System.out.println(request);
-
         if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) return connection.getResponseMessage();
 
         InputStream inputStream = new GZIPInputStream(connection.getInputStream());
-
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-        String line;
-        StringBuilder response = new StringBuilder();
 
-
-        while ((line = reader.readLine()) != null) {
-            response.append(line).append("\n");
-        }
+        String response = reader.lines().collect(Collectors.joining("\n"));
 
         connection.disconnect();
         reader.close();
 
-        return response.toString();
+        return response;
     }
 
     public static String user(Token token) throws IOException {

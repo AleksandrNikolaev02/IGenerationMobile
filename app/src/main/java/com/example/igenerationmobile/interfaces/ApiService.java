@@ -4,6 +4,8 @@ import com.example.igenerationmobile.dto.FieldDto;
 import com.example.igenerationmobile.dto.ModeDto;
 import com.example.igenerationmobile.dto.UserDto;
 import com.example.igenerationmobile.model.Field;
+import com.example.igenerationmobile.model.Login;
+import com.example.igenerationmobile.model.Token;
 import com.example.igenerationmobile.model.User;
 
 import java.util.List;
@@ -23,4 +25,7 @@ public interface ApiService {
 
     @PATCH("profile/update")
     Call<Void> update(@Header("Authorization") String token, @Body ModeDto modeDto);
+
+    @POST("login")
+    Call<Token> login(@Body Login loginDto);
 }
