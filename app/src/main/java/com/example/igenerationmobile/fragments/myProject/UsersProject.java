@@ -110,21 +110,6 @@ public class UsersProject extends Fragment implements RecyclerInterface {
         } else {
             intent = new Intent(requireActivity(), ProfileAnotherUser.class);
 
-            // encoded image
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            adapter.users.get(position).getAvatar().compress(Bitmap.CompressFormat.PNG, 100, baos);
-            byte[] b = baos.toByteArray();
-            String encoded = Base64.encodeToString(b, Base64.DEFAULT);
-
-            // save image in shared preference
-            if (getActivity() != null) {
-                SharedPreferences sharedPreferences = getActivity().getApplicationContext().getSharedPreferences("image.public.profile_imgs", Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-
-                editor.putString(adapter.users.get(position).getImg_file(), encoded);
-                editor.apply();
-            }
-
             intent.putExtra("user_id", adapter.users.get(position).getId());
         }
         startActivity(intent);

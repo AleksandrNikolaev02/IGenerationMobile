@@ -23,6 +23,7 @@ import com.example.igenerationmobile.model.Token;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.material.imageview.ShapeableImageView;
+import com.squareup.picasso.Picasso;
 
 import org.apache.commons.text.StringEscapeUtils;
 import org.json.JSONException;
@@ -111,7 +112,14 @@ public class ProfileAnotherUser extends AppCompatActivity {
                 String result = sharedPreferences.getString(user.getString("img_file"), "");
 
                 if (result.isEmpty()) {
-                    new HTTPImage().execute(user.getString("img_file"));
+                    String imageUrl = user.getString("img_file").isEmpty() ? HTTPMethods.urlIGN + "/img/avatar_00.png" :
+                            HTTPMethods.urlApi + "/image/" + user.getString("img_file").replaceAll("\\\\/", "/");
+//                    new HTTPImage().execute(user.getString("img_file"));
+                    Picasso.get()
+                            .load(imageUrl)
+                            .fit()
+                            .centerInside()
+                            .into(shapeableImageView);
                 } else {
                     byte[] imageAsBytes = Base64.decode(result.getBytes(), Base64.DEFAULT);
                     shapeableImageView.setImageBitmap(BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length));
