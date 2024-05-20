@@ -38,8 +38,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 
 public class UsersProjectAnotherUser extends Fragment implements RecyclerInterface {
@@ -131,77 +129,60 @@ public class UsersProjectAnotherUser extends Fragment implements RecyclerInterfa
 
     @SuppressWarnings({"deprecation"})
     @SuppressLint("StaticFieldLeak")
-    private class HTTPProcess extends AsyncTask<String, ConcurrentMap<String, Bitmap>, ConcurrentMap<String, Bitmap>> {
+    private class HTTPProcess extends AsyncTask<String, List<String>, List<String>> {
 
         private JSONArray jsonArray;
         @Override
-        protected ConcurrentMap<String, Bitmap> doInBackground(String... strings) {
+        protected List<String> doInBackground(String... strings) {
             try {
                 String usersString = HTTPMethods.projectUsers(token, project_id);
                 jsonArray = new JSONArray(usersString);
 
-                List<Thread> threads = new ArrayList<>();
-                ConcurrentMap<String, Bitmap> images = new ConcurrentHashMap<>();
+                List<String> imageUrls = new ArrayList<>();
 
                 for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject user = jsonArray.getJSONObject(i);
-                    Thread thread = new Thread(() -> {
-                        try {
-                            Bitmap bitmap;
-                            if (user.getString("img_file").isEmpty()) {
-                                bitmap = HTTPMethods.getDefaultImage();
-                            } else {
-                                bitmap = HTTPMethods.getImage(user.getString("img_file"));
-                            }
-                            images.put(user.getString("img_file"), bitmap);
-                        } catch (JSONException e) {
-                            throw new RuntimeException(e);
-                        }
-                    });
-                    threads.add(thread);
+
+                    String imageUrl = user.getString("img_file").isEmpty() ? HTTPMethods.urlIGN + "/img/avatar_00.png" :
+                            HTTPMethods.urlApi + "/image/" + user.getString("img_file").replaceAll("\\\\/", "/");
+
+                    imageUrls.add(imageUrl);
                 }
 
-                for (Thread thread : threads) {
-                    thread.start();
-                }
-
-                for (Thread thread : threads) {
-                    thread.join();
-                }
-                return images;
-            } catch (IOException | JSONException | InterruptedException e) {
+                return imageUrls;
+            } catch (IOException | JSONException e) {
                 throw new RuntimeException(e);
             }
         }
 
         @Override
-        protected void onPostExecute(ConcurrentMap<String, Bitmap> map) {
-            super.onPostExecute(map);
+        protected void onPostExecute(List<String> imageUrls) {
+            super.onPostExecute(imageUrls);
 
             for (int i = 0; i < jsonArray.length(); i++) {
                 try {
                     JSONObject user = jsonArray.getJSONObject(i);
-                    String fileName = user.getString("img_file");
+
+                    String fileName = user.getString("img_file").isEmpty() ? HTTPMethods.urlIGN + "/img/avatar_00.png" :
+                            HTTPMethods.urlApi + "/image/" + user.getString("img_file").replaceAll("\\\\/", "/");
+
                     String roleInProject = author_id.equals(user.getInt("user_id")) ? "Автор" : "Менеджер";
 
                     int index_elem = adapter.getItemCount();
 
                     adapter.users.add(new UserProject(
-                            map.get(fileName),
-                            new StringBuilder()
-                                    .append(StringEscapeUtils.unescapeJava(user.getString("fname")))
-                                    .append(" ")
-                                    .append(StringEscapeUtils.unescapeJava(user.getString("iname")).charAt(0))
-                                    .append(". ")
-                                    .append(StringEscapeUtils.unescapeJava(user.getString("oname")).charAt(0))
-                                    .append(".").toString(),
+                            null,
+                            StringEscapeUtils.unescapeJava(user.getString("fname")) +
+                                    " " +
+                                    StringEscapeUtils.unescapeJava(user.getString("iname")).charAt(0) +
+                                    ". " +
+                                    StringEscapeUtils.unescapeJava(user.getString("oname")).charAt(0) +
+                                    ".",
                             roleInProject,
                             user.getInt("user_id"),
                             fileName,
                             user.getInt("status")
                     ));
-
-
 
                     adapter.notifyItemInserted(index_elem);
                 } catch (JSONException e) {
@@ -210,4 +191,5 @@ public class UsersProjectAnotherUser extends Fragment implements RecyclerInterfa
             }
         }
     }
+
 }

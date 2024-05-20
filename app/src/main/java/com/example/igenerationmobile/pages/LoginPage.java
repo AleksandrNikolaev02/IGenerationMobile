@@ -81,6 +81,8 @@ public class LoginPage extends AppCompatActivity {
                         editor.putString("token", response.body().toString());
                         editor.apply();
 
+                        System.setProperty("https.protocols", "TLSv1.2");
+
                         startActivity(intent);
                     }
                 } else {
