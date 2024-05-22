@@ -37,6 +37,7 @@ import com.example.igenerationmobile.model.Achievement;
 import com.example.igenerationmobile.model.MyAchievement;
 import com.example.igenerationmobile.model.Token;
 import com.example.igenerationmobile.pages.EditProfilePage;
+import com.example.igenerationmobile.pages.LoginPage;
 import com.example.igenerationmobile.pages.YourOptions;
 import com.example.igenerationmobile.pages.YourProjects;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -59,9 +60,8 @@ public class YourProfile extends Fragment {
     private AppCompatButton projects;
     private AppCompatButton settings;
     private AppCompatButton notifications;
-
     private ImageButton edit;
-
+    private ImageButton exit;
     private ShapeableImageView avatar;
     private String pathToAvatar;
     private TextView name;
@@ -132,6 +132,7 @@ public class YourProfile extends Fragment {
         login = view.findViewById(R.id.login);
         organization = view.findViewById(R.id.organization);
         edit = view.findViewById(R.id.edit);
+        exit = view.findViewById(R.id.exit);
 
         edit.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), EditProfilePage.class);
@@ -139,6 +140,14 @@ public class YourProfile extends Fragment {
             intent.putExtra("name", name.getText());
             intent.putExtra("organization", organization.getText());
             intent.putExtra("path", pathToAvatar);
+
+            startActivity(intent);
+        });
+
+        exit.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), LoginPage.class);
+
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
             startActivity(intent);
         });
