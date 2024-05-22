@@ -156,9 +156,7 @@ public class YourProfile extends Fragment {
                 editor.putBoolean("auth", false);
                 editor.apply();
 
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-                getActivity().finish();
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
                 startActivity(intent);
             }
