@@ -111,14 +111,18 @@ public class YourProfile extends Fragment {
                              Bundle savedInstanceState) {
         View view  = inflater.inflate(R.layout.fragment_your_profile, container, false);
 
+        SharedPreferences sharedPreferences;
+
         if (getActivity() != null) {
-            SharedPreferences sharedPreferences = getActivity().getApplicationContext().getSharedPreferences("UserData", Context.MODE_PRIVATE);
+            sharedPreferences = getActivity().getApplicationContext().getSharedPreferences("UserData", Context.MODE_PRIVATE);
             try {
                 token = mapper.readValue(sharedPreferences.getString("token", ""), Token.class);
                 user_id = sharedPreferences.getInt("id", -1);
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
+        } else {
+            sharedPreferences = null;
         }
 
         avatar = view.findViewById(R.id.ShapeableImageView);
@@ -145,11 +149,17 @@ public class YourProfile extends Fragment {
         });
 
         exit.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), LoginPage.class);
+            if (sharedPreferences != null) {
+                Intent intent = new Intent(getActivity(), LoginPage.class);
 
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean("auth", false);
+                editor.apply();
 
-            startActivity(intent);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+                startActivity(intent);
+            }
         });
 
         new getCnt().execute();

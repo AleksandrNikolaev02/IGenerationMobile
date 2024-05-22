@@ -31,6 +31,7 @@ public class LoginPage extends AppCompatActivity {
     private EditText passwordField;
     private ApiService apiService;
     private final ObjectMapper mapper = new ObjectMapper();
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +41,16 @@ public class LoginPage extends AppCompatActivity {
         loginButton = findViewById(R.id.login);
         emailField = findViewById(R.id.email);
         passwordField = findViewById(R.id.password);
+
+        sharedPreferences = getApplicationContext().getSharedPreferences("UserData", Context.MODE_PRIVATE);
+
+        boolean auth = sharedPreferences.getBoolean("auth", false);
+
+        if (auth) {
+            Intent intent = new Intent(LoginPage.this, MainPage.class);
+
+            startActivity(intent);
+        }
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(HTTPMethods.urlApi + "/")
@@ -76,9 +87,9 @@ public class LoginPage extends AppCompatActivity {
                     if (response.body() != null) {
                         Intent intent = new Intent(LoginPage.this, MainPage.class);
 
-                        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("UserData", Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPreferences.edit();
                         editor.putString("token", response.body().toString());
+                        editor.putBoolean("auth", true);
                         editor.apply();
 
                         System.setProperty("https.protocols", "TLSv1.2");
