@@ -158,6 +158,8 @@ public class YourProfile extends Fragment {
 
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
+                getActivity().finish();
+
                 startActivity(intent);
             }
         });

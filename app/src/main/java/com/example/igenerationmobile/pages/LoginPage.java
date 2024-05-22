@@ -38,10 +38,6 @@ public class LoginPage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        loginButton = findViewById(R.id.login);
-        emailField = findViewById(R.id.email);
-        passwordField = findViewById(R.id.password);
-
         sharedPreferences = getApplicationContext().getSharedPreferences("UserData", Context.MODE_PRIVATE);
 
         boolean auth = sharedPreferences.getBoolean("auth", false);
@@ -49,8 +45,16 @@ public class LoginPage extends AppCompatActivity {
         if (auth) {
             Intent intent = new Intent(LoginPage.this, MainPage.class);
 
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
             startActivity(intent);
+
+            finish();
         }
+
+        loginButton = findViewById(R.id.login);
+        emailField = findViewById(R.id.email);
+        passwordField = findViewById(R.id.password);
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(HTTPMethods.urlApi + "/")
@@ -87,12 +91,16 @@ public class LoginPage extends AppCompatActivity {
                     if (response.body() != null) {
                         Intent intent = new Intent(LoginPage.this, MainPage.class);
 
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
                         SharedPreferences.Editor editor = sharedPreferences.edit();
                         editor.putString("token", response.body().toString());
                         editor.putBoolean("auth", true);
                         editor.apply();
 
                         System.setProperty("https.protocols", "TLSv1.2");
+
+                        finish();
 
                         startActivity(intent);
                     }
