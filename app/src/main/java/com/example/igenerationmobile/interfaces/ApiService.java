@@ -2,12 +2,16 @@ package com.example.igenerationmobile.interfaces;
 
 import com.example.igenerationmobile.dto.FieldDto;
 import com.example.igenerationmobile.dto.ModeDto;
+import com.example.igenerationmobile.dto.TrackDto;
 import com.example.igenerationmobile.dto.UserDto;
 import com.example.igenerationmobile.dto.CreateProjectDto;
+import com.example.igenerationmobile.fragments.myProject.ProjectDto;
 import com.example.igenerationmobile.model.Field;
 import com.example.igenerationmobile.model.InfoProject;
 import com.example.igenerationmobile.model.Login;
+import com.example.igenerationmobile.model.Project;
 import com.example.igenerationmobile.model.Token;
+import com.example.igenerationmobile.model.Track;
 import com.example.igenerationmobile.model.User;
 
 import java.util.List;
@@ -33,4 +37,10 @@ public interface ApiService {
 
     @POST("projects/add-project")
     Call<InfoProject> addProject(@Header("Authorization") String token, @Body CreateProjectDto createProjectDto);
+
+    @POST("tracks")
+    Call<List<Track>> tracks(@Header("Authorization") String token, @Body TrackDto trackDto);
+
+    @POST("set-track")
+    Call<Project> setTrack(@Header("Authorization") String token, @Body ProjectDto projectDto);
 }
