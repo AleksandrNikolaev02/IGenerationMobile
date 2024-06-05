@@ -9,12 +9,16 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.drawable.PictureDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
 
+import android.util.Pair;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,9 +33,15 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.ImageViewTarget;
+import com.bumptech.glide.request.target.Target;
 import com.caverock.androidsvg.SVG;
 import com.caverock.androidsvg.SVGParseException;
 import com.example.igenerationmobile.R;
+import com.example.igenerationmobile.glide.GlideApp;
 import com.example.igenerationmobile.http.HTTPMethods;
 import com.example.igenerationmobile.model.Achievement;
 import com.example.igenerationmobile.model.MyAchievement;
@@ -73,6 +83,7 @@ public class YourProfile extends Fragment {
     private Token token;
     private int user_id;
     private final ObjectMapper mapper = new ObjectMapper();
+    private LinearLayout imageContainer;
 
     public YourProfile() {
         // Required empty public constructor
@@ -137,6 +148,7 @@ public class YourProfile extends Fragment {
         organization = view.findViewById(R.id.organization);
         edit = view.findViewById(R.id.edit);
         exit = view.findViewById(R.id.exit);
+        imageContainer = view.findViewById(R.id.linear_layout_id);
 
         edit.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), EditProfilePage.class);
@@ -288,64 +300,78 @@ public class YourProfile extends Fragment {
         }
     }
 
+
+    public static class SvgSoftwareLayerSetter implements RequestListener<PictureDrawable> {
+        @Override
+        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<PictureDrawable> target, boolean isFirstResource) {
+            ImageView view = ((ImageViewTarget<?>) target).getView();
+            view.setLayerType(ImageView.LAYER_TYPE_NONE, null);
+            return false;
+        }
+
+        @Override
+        public boolean onResourceReady(@NonNull PictureDrawable resource, Object model, Target<PictureDrawable> target, DataSource dataSource, boolean isFirstResource) {
+            ImageView view = ((ImageViewTarget<?>) target).getView();
+            view.setLayerType(ImageView.LAYER_TYPE_SOFTWARE, null);
+            return false;
+        }
+    }
+
     @SuppressLint("StaticFieldLeak")
     @SuppressWarnings({"deprecation"})
-    private class getAchievements extends AsyncTask<String, String, HashMap<Achievement, String>> {
+    private class getAchievements extends AsyncTask<String, String, Pair<List<MyAchievement>, String>> {
 
 
         @Override
-        protected HashMap<Achievement, String> doInBackground(String... strings) {
+        protected Pair<List<MyAchievement>, String> doInBackground(String... strings) {
             try {
                 String response = HTTPMethods.myAchievements(token);
+
                 List<MyAchievement> myAchievements = mapper.readValue(response, new TypeReference<>() {});
 
-                if (myAchievements.isEmpty()) return new HashMap<>();
-                else {
-                    String allAchievements = HTTPMethods.achievements(token);
-
-                    HashMap<Achievement, String> result = new HashMap<>();
-                    List<Achievement> achievements = mapper.readValue(allAchievements, new TypeReference<>() {});
-
-                    for (MyAchievement myAchievement : myAchievements) {
-                        for (Achievement achievement : achievements) {
-                            if (myAchievement.getAchievementId() == achievement.getId()) {
-                                result.put(achievement, HTTPMethods.getSVGImage(achievement.getIcon()));
-                            }
-                        }
-                    }
-
-                    return result;
-                }
-
+                if (myAchievements.isEmpty()) return new Pair<>(myAchievements, "");
+                else return new Pair<>(myAchievements, HTTPMethods.achievements(token));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
 
         @Override
-        protected void onPostExecute(HashMap<Achievement, String> strings) {
-            super.onPostExecute(strings);
-            LinearLayout imageContainer = requireActivity().findViewById(R.id.linear_layout_id);
+        protected void onPostExecute(Pair<List<MyAchievement>, String> response) {
+            super.onPostExecute(response);
 
-            for (Map.Entry<Achievement, String> entry : strings.entrySet()) {
+            if (!response.second.isEmpty()) {
+                System.out.println("Call from result");
+                try {
+                    List<Achievement> achievements = mapper.readValue(response.second, new TypeReference<>() {});
+                    List<MyAchievement> myAchievements = response.first;
 
-                ImageView image = new ImageView(getActivity());
-                Bitmap bitmap = getBitmapFromSvgData(entry.getValue());
-                image.setImageBitmap(bitmap);
+                    for (MyAchievement myAchievement : myAchievements) {
+                        for (Achievement achievement : achievements) {
+                            if (myAchievement.getAchievementId() == achievement.getId()) {
+                                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(200, 200);
+                                int rightMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, getResources().getDisplayMetrics());
+                                layoutParams.setMargins(0, 0, rightMargin, 0);
 
-                image.setOnClickListener(l -> {
-                    System.out.println(l.getId());
+                                ImageView image = new ImageView(getActivity());
 
-                });
+                                image.setBackgroundColor(Color.parseColor(achievement.getColor()));
 
-                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(200, 200);
-                int rightMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, getResources().getDisplayMetrics());
-                layoutParams.setMargins(0, 0, rightMargin, 0);
+                                imageContainer.addView(image);
 
-                image.setLayoutParams(layoutParams);
-                image.setBackgroundColor(Color.parseColor(entry.getKey().getColor()));
+                                GlideApp.with(getActivity())
+                                        .as(PictureDrawable.class)
+                                        .listener(new SvgSoftwareLayerSetter())
+                                        .load(HTTPMethods.urlIGN + "/icons/" + achievement.getIcon())
+                                        .into(image);
+                            }
+                        }
+                    }
+                } catch (JsonProcessingException e) {
+                    throw new RuntimeException(e);
+                }
 
-                imageContainer.addView(image);
+
             }
         }
 
