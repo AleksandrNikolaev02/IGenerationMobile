@@ -3,7 +3,9 @@ package com.example.igenerationmobile.interfaces;
 import com.example.igenerationmobile.dto.FieldDto;
 import com.example.igenerationmobile.dto.ModeDto;
 import com.example.igenerationmobile.dto.UserDto;
+import com.example.igenerationmobile.dto.CreateProjectDto;
 import com.example.igenerationmobile.model.Field;
+import com.example.igenerationmobile.model.InfoProject;
 import com.example.igenerationmobile.model.Login;
 import com.example.igenerationmobile.model.Token;
 import com.example.igenerationmobile.model.User;
@@ -28,4 +30,7 @@ public interface ApiService {
 
     @POST("login")
     Call<Token> login(@Body Login loginDto);
+
+    @POST("projects/add-project")
+    Call<InfoProject> addProject(@Header("Authorization") String token, @Body CreateProjectDto createProjectDto);
 }

@@ -91,4 +91,8 @@
         <item>По рейтингу</item>
     </string-array>
 
+    <string name="new_project">Новый проект</string>
+
+    <string name="empty_name_project">Название проекта не может быть пустым!</string>
+
 </resources>

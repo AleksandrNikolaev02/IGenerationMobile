@@ -14,6 +14,7 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -55,6 +56,8 @@ public class YourProjects extends AppCompatActivity implements RecyclerInterface
     private Spinner sessions;
     LinearLayout linearLayout;
     private String defaultSession;
+    private boolean onResume = false;
+    private boolean isFirst = true;
 
     public YourProjects(){
 
@@ -124,12 +127,26 @@ public class YourProjects extends AppCompatActivity implements RecyclerInterface
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
+        int id = item.getItemId();
+
+        if (id == android.R.id.home) {
             setResult(RESULT_OK);
             finish();
             return true;
         }
+        if (id == R.id.add_project) {
+            Intent intent = new Intent(this, CreateProject.class);
+
+            startActivity(intent);
+            return true;
+        }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
     }
 
     @Override
@@ -137,6 +154,25 @@ public class YourProjects extends AppCompatActivity implements RecyclerInterface
         setResult(RESULT_OK);
         super.onBackPressed();
     }
+
+    @Override
+    @SuppressWarnings({"deprecation"})
+    protected void onResume() {
+        super.onResume();
+
+        if (!isFirst) {
+            System.out.println("OnResume?");
+
+            onResume = true;
+
+            adapter.list.clear();
+
+            new getProjects().execute();
+
+            isFirst = false;
+        }
+    }
+
 
     @Override
     public void onItemClick(int position) {
@@ -154,6 +190,7 @@ public class YourProjects extends AppCompatActivity implements RecyclerInterface
         startActivity(intent);
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void loadData() {
         try {
 
@@ -226,6 +263,12 @@ public class YourProjects extends AppCompatActivity implements RecyclerInterface
                 }
 
             }
+
+            if (onResume) {
+                adapter.notifyDataSetChanged();
+                onResume = false;
+            }
+
             if (adapter.list.isEmpty()) {
 
 //                TextView name = new TextView(YourProjects.this);

@@ -1,0 +1,8 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <!-- Идентификатор и иконка для ImageButton -->
+    <item android:id="@+id/add_project"
+        android:title="My ImageButton"
+        android:icon="@drawable/add_project"
+    app:showAsAction="ifRoom|withText" />
+</menu>
