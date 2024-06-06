@@ -48,6 +48,7 @@ import com.example.igenerationmobile.model.MyAchievement;
 import com.example.igenerationmobile.model.Token;
 import com.example.igenerationmobile.pages.EditProfilePage;
 import com.example.igenerationmobile.pages.LoginPage;
+import com.example.igenerationmobile.pages.NotificationPage;
 import com.example.igenerationmobile.pages.YourOptions;
 import com.example.igenerationmobile.pages.YourProjects;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -61,6 +62,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.nio.channels.InterruptedByTimeoutException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -172,6 +174,12 @@ public class YourProfile extends Fragment {
 
                 startActivity(intent);
             }
+        });
+
+        notifications.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), NotificationPage.class);
+
+            startActivity(intent);
         });
 
         new getCnt().execute();

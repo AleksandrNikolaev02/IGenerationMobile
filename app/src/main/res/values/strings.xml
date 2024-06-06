@@ -99,4 +99,6 @@
     <string name="confirm_request">Принимать новые заявки</string>
     <string name="wasant">Участвовать в общем рейтинге проектов</string>
 
+    <string name="start_notify">PUSH-уведомления</string>
+
 </resources>

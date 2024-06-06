@@ -20,6 +20,9 @@
         tools:ignore="LockedOrientationActivity"
         tools:targetApi="31">
         <activity
+            android:name=".pages.NotificationPage"
+            android:exported="false" />
+        <activity
             android:name=".pages.EditProjectPage"
             android:exported="false" />
         <activity
@@ -68,6 +71,9 @@
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
+
+        <receiver android:name=".notification.NotificationReceiver" />
+
     </application>
 
 </manifest>
