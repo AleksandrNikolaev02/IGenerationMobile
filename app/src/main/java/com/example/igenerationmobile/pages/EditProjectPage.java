@@ -1,24 +1,23 @@
-package com.example.igenerationmobile.fragments.myProject;
-
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.os.Bundle;
+package com.example.igenerationmobile.pages;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.view.LayoutInflater;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.igenerationmobile.R;
 import com.example.igenerationmobile.adapters.TrajectoryAdapter;
 import com.example.igenerationmobile.dto.TrackDto;
+import com.example.igenerationmobile.fragments.myProject.ProjectDto;
 import com.example.igenerationmobile.http.HTTPMethods;
 import com.example.igenerationmobile.interfaces.ApiService;
 import com.example.igenerationmobile.interfaces.RecyclerInterface;
@@ -28,7 +27,6 @@ import com.example.igenerationmobile.model.Track;
 import com.example.igenerationmobile.model.TrajectoryModel.Trajectory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.List;
 
@@ -38,9 +36,8 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
-public class EmptyProject extends Fragment implements RecyclerInterface {
-    private BottomNavigationView bottomNavigationView;
-    private Toolbar toolbar;
+public class EditProjectPage extends AppCompatActivity implements RecyclerInterface {
+
     private TrajectoryAdapter adapter;
     private RecyclerView recyclerView;
     private Token token;
@@ -48,28 +45,27 @@ public class EmptyProject extends Fragment implements RecyclerInterface {
     private int project_id;
     private ApiService apiService;
     private String tokenStr;
-
-    public EmptyProject() {
-        // Required empty public constructor
-    }
+    private Toolbar toolbar;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_edit_project_page);
 
-    }
+        recyclerView = findViewById(R.id.listTrajectory);
+        toolbar = findViewById(R.id.toolbar);
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view  = inflater.inflate(R.layout.fragment_empty_project, container, false);
+        setSupportActionBar(toolbar);
 
-        recyclerView = view.findViewById(R.id.listTrajectory);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
 
-        adapter = new TrajectoryAdapter(getActivity(), this);
+        adapter = new TrajectoryAdapter(this, this);
 
         recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(HTTPMethods.urlApi + "/")
@@ -78,32 +74,20 @@ public class EmptyProject extends Fragment implements RecyclerInterface {
 
         apiService = retrofit.create(ApiService.class);
 
-        if (getActivity() != null) {
-            SharedPreferences userData = getActivity().getApplicationContext().getSharedPreferences("UserData", Context.MODE_PRIVATE);
+        SharedPreferences userData = getApplicationContext().getSharedPreferences("UserData", Context.MODE_PRIVATE);
 
-            SharedPreferences my_project = getActivity().getApplicationContext().getSharedPreferences("pages.my_project_page", Context.MODE_PRIVATE);
+        SharedPreferences my_project = getApplicationContext().getSharedPreferences("pages.my_project_page", Context.MODE_PRIVATE);
 
-            try {
-                token = mapper.readValue(userData.getString("token", ""), Token.class);
-                tokenStr = token.getTokenType() + " " + token.getAccessToken();
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
+        project_id = my_project.getInt("project_id", -1);
 
-            project_id = my_project.getInt("project_id", -1);
-
-            bottomNavigationView = getActivity().findViewById(R.id.bottomNavigationView2);
-
-            toolbar = getActivity().findViewById(R.id.toolbar);
-
-            MenuItem trajectory = bottomNavigationView.getMenu().findItem(R.id.trajectoryProject);
-
-            toolbar.setTitle(trajectory.getTitle());
-
-            tracks();
+        try {
+            token = mapper.readValue(userData.getString("token", ""), Token.class);
+            tokenStr = token.getTokenType() + " " + token.getAccessToken();
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
 
-        return view;
+        tracks();
     }
 
     private void tracks() {
@@ -135,7 +119,7 @@ public class EmptyProject extends Fragment implements RecyclerInterface {
 
             @Override
             public void onFailure(@NonNull Call<List<Track>> call, @NonNull Throwable t) {
-                Toast.makeText(getActivity(), "Выбор траектории произошло с ошибкой", Toast.LENGTH_LONG).show();
+                Toast.makeText(EditProjectPage.this, "Выбор траектории произошло с ошибкой", Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -149,21 +133,16 @@ public class EmptyProject extends Fragment implements RecyclerInterface {
             @Override
             public void onResponse(@NonNull Call<Project> call, @NonNull Response<Project> response) {
                 if (response.isSuccessful()) {
-                    Project project = response.body();
-
-                    if (project != null && getActivity() != null) {
-                        getActivity().recreate();
-                    }
+                    Toast.makeText(EditProjectPage.this, "Выбор траектории сохранен!", Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<Project> call, @NonNull Throwable t) {
-                Toast.makeText(getActivity(), "Выбор траектории произошло с ошибкой", Toast.LENGTH_LONG).show();
+                Toast.makeText(EditProjectPage.this, "Выбор траектории произошло с ошибкой", Toast.LENGTH_LONG).show();
             }
         });
     }
-
 
     @Override
     public void onItemClick(int position) {
@@ -172,4 +151,12 @@ public class EmptyProject extends Fragment implements RecyclerInterface {
         setTrack(trajectory.getTrack_id());
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }

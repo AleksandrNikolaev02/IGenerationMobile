@@ -177,13 +177,17 @@ public class YourProjects extends AppCompatActivity implements RecyclerInterface
     @Override
     public void onItemClick(int position) {
         Intent intent = new Intent(this, MyProjectPage.class);
+
+        RecyclerModel model = adapter.list.get(position);
+
         System.out.println(adapter.list.get(position));
 
         SharedPreferences sharedPreferences = this.getApplicationContext().getSharedPreferences("UserData", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
-        editor.putInt("project_id", adapter.list.get(position).getProject_id());
-        editor.putInt("author_id", adapter.list.get(position).getAuthor_id());
+        editor.putInt("project_id", model.getProject_id());
+        editor.putInt("author_id", model.getAuthor_id());
+        editor.putBoolean("isAuthor", model.getAuthor_id() == user_id);
 
         editor.apply();
 

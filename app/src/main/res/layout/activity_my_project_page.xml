@@ -24,6 +24,7 @@
             android:fontFamily="@font/poppins_bold"
             android:singleLine="true"
             android:text="@string/todo"
+            app:menu="@menu/edit_menu"
             android:textColor="@color/black"
             android:textSize="30sp"
             android:textStyle="bold"

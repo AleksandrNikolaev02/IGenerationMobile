@@ -95,4 +95,8 @@
 
     <string name="empty_name_project">Название проекта не может быть пустым!</string>
 
+    <string name="hide_project">Скрыть проект из общего списка</string>
+    <string name="confirm_request">Принимать новые заявки</string>
+    <string name="wasant">Участвовать в общем рейтинге проектов</string>
+
 </resources>

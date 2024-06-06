@@ -9,8 +9,10 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.igenerationmobile.R;
@@ -78,9 +80,36 @@ public class MyProjectPage extends AppCompatActivity {
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem item = menu.findItem(R.id.edit_project);
+
+        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("UserData", Context.MODE_PRIVATE);
+        boolean isAuthor = sharedPreferences.getBoolean("isAuthor", false);
+
+        if (!isAuthor) item.setVisible(false);
+
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.edit_menu, menu);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             finish();
+            return true;
+        }
+        if (item.getItemId() == R.id.edit_project) {
+
+            Intent intent = new Intent(MyProjectPage.this, EditProjectPage.class);
+
+            startActivity(intent);
+
             return true;
         }
         return super.onOptionsItemSelected(item);
