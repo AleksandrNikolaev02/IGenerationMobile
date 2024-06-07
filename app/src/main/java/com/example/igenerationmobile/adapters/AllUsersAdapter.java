@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.igenerationmobile.http.HTTPMethods;
 import com.example.igenerationmobile.interfaces.RecyclerInterface;
 import com.example.igenerationmobile.model.AllUsersAdapterModel.UserModel;
 import com.google.android.material.imageview.ShapeableImageView;
@@ -44,11 +45,19 @@ public class AllUsersAdapter extends RecyclerView.Adapter<AllUsersAdapter.Adapte
     public void onBindViewHolder(@NonNull AllUsersAdapter.AdapterHolder holder, int position) {
         UserModel model = users.get(position);
 
-        Picasso.get()
-                .load(model.getImageURL())
-                .fit()
-                .centerInside()
-                .into(holder.image);
+        if (model.getImageURL().contains(HTTPMethods.urlApi)) {
+            Picasso.get()
+                    .load(model.getImageURL())
+                    .fit()
+                    .centerInside()
+                    .into(holder.image);
+        } else {
+            Picasso.get()
+                    .load(R.drawable.avatar_00)
+                    .fit()
+                    .centerInside()
+                    .into(holder.image);
+        }
 
         holder.name.setText(model.getName());
         holder.name.setTextColor(context.getColor(R.color.white));

@@ -144,7 +144,7 @@ public class UsersProjectAnotherUser extends Fragment implements RecyclerInterfa
                 try {
                     JSONObject user = jsonArray.getJSONObject(i);
 
-                    String fileName = user.getString("img_file").isEmpty() ? HTTPMethods.urlIGN + "/img/avatar_00.png" :
+                    String fileName = user.getString("img_file").isEmpty() ? "avatar_00.png" :
                             HTTPMethods.urlApi + "/image/" + user.getString("img_file").replaceAll("\\\\/", "/");
 
                     String roleInProject = author_id.equals(user.getInt("user_id")) ? "Автор" : "Менеджер";

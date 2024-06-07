@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.igenerationmobile.R;
+import com.example.igenerationmobile.http.HTTPMethods;
 import com.example.igenerationmobile.interfaces.RecyclerInterface;
 import com.example.igenerationmobile.model.UserProject;
 import com.google.android.material.imageview.ShapeableImageView;
@@ -45,11 +46,23 @@ public class ProjectsAdapter extends RecyclerView.Adapter<ProjectsAdapter.Adapte
     @Override
     public void onBindViewHolder(@NonNull ProjectsAdapter.AdapterHolder holder, int position) {
 //        holder.image.setImageBitmap(users.get(position).getAvatar());
-        Picasso.get()
-                .load(users.get(position).getImg_file())
-                .fit()
-                .centerInside()
-                .into(holder.image);
+
+        UserProject userProject = users.get(position);
+
+        if (userProject.getImg_file().contains(HTTPMethods.urlApi)) {
+            Picasso.get()
+                    .load(userProject.getImg_file())
+                    .fit()
+                    .centerInside()
+                    .into(holder.image);
+        } else {
+            Picasso.get()
+                    .load(R.drawable.avatar_00)
+                    .fit()
+                    .centerInside()
+                    .into(holder.image);
+        }
+
         holder.role.setText(users.get(position).getRole());
         holder.fio.setText(users.get(position).getFio());
 

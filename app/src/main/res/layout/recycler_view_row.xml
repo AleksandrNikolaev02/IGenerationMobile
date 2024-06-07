@@ -31,13 +31,13 @@
                 android:id="@+id/role"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:background="@color/blue"
                 android:text="Role"
+                android:textColor="@color/white"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                android:textColor="@color/white"
-                android:background="@color/blue"
-                android:layout_marginEnd="20dp"
-                />
+                tools:ignore="TextContrastCheck" />
 
             <TextView
                 android:id="@+id/date"
@@ -68,6 +68,8 @@
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:src="@drawable/projects"
+                android:background="@color/IGNColorBackground"
+                android:scaleType="centerCrop"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/date"
                 app:layout_constraintStart_toStartOf="parent"

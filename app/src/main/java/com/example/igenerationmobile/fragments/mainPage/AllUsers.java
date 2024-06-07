@@ -165,7 +165,7 @@ public class AllUsers extends Fragment implements RecyclerInterface {
                 for (int i = 0; i < usersJSON.length(); i++) {
                     JSONObject user = usersJSON.getJSONObject(i);
 
-                    String imageURL = user.getString("img_file").isEmpty() ? HTTPMethods.urlIGN + "/img/avatar_00.png"
+                    String imageURL = user.getString("img_file").isEmpty() ? "avatar_00.png"
                                         : HTTPMethods.urlApi + "/image/" + user.getString("img_file").replaceAll("\\\\/", "/");
                     String name = StringEscapeUtils.unescapeJava(user.getString("fname")) + " " +
                             StringEscapeUtils.unescapeJava(user.getString("iname")) + " " +

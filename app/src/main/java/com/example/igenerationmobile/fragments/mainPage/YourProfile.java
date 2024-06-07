@@ -41,7 +41,6 @@ import com.bumptech.glide.request.target.Target;
 import com.caverock.androidsvg.SVG;
 import com.caverock.androidsvg.SVGParseException;
 import com.example.igenerationmobile.R;
-import com.example.igenerationmobile.glide.GlideApp;
 import com.example.igenerationmobile.http.HTTPMethods;
 import com.example.igenerationmobile.model.Achievement;
 import com.example.igenerationmobile.model.MyAchievement;
@@ -55,6 +54,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.material.imageview.ShapeableImageView;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import org.apache.commons.text.StringEscapeUtils;
@@ -62,7 +62,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.nio.channels.InterruptedByTimeoutException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -85,7 +84,6 @@ public class YourProfile extends Fragment {
     private Token token;
     private int user_id;
     private final ObjectMapper mapper = new ObjectMapper();
-    private LinearLayout imageContainer;
 
     public YourProfile() {
         // Required empty public constructor
@@ -150,7 +148,6 @@ public class YourProfile extends Fragment {
         organization = view.findViewById(R.id.organization);
         edit = view.findViewById(R.id.edit);
         exit = view.findViewById(R.id.exit);
-        imageContainer = view.findViewById(R.id.linear_layout_id);
 
         edit.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), EditProfilePage.class);
@@ -216,12 +213,21 @@ public class YourProfile extends Fragment {
                         pathToAvatar = imagePath.isEmpty() ? HTTPMethods.urlIGN + "/img/avatar_00.png" :
                                 HTTPMethods.urlApi + "/image/" + imagePath.replaceAll("\\\\/", "/");
 
-                        Picasso.get()
-                                .load(pathToAvatar)
-                                .placeholder(R.drawable.loading_animation_profile)
-                                .fit()
-                                .centerInside()
-                                .into(avatar);
+                        if (imagePath.isEmpty()) {
+                            Picasso.get()
+                                    .load(R.drawable.avatar_00)
+                                    .placeholder(R.drawable.loading_animation_profile)
+                                    .fit()
+                                    .centerInside()
+                                    .into(avatar);
+                        } else {
+                            Picasso.get()
+                                    .load(pathToAvatar)
+                                    .placeholder(R.drawable.loading_animation_profile)
+                                    .fit()
+                                    .centerInside()
+                                    .into(avatar);
+                        }
 
                         String nameUser = StringEscapeUtils.unescapeJava(user.getString("fname")) + " " +
                                 StringEscapeUtils.unescapeJava(user.getString("iname")) + " " +
@@ -348,8 +354,9 @@ public class YourProfile extends Fragment {
         protected void onPostExecute(Pair<List<MyAchievement>, String> response) {
             super.onPostExecute(response);
 
+            LinearLayout imageContainer = requireActivity().findViewById(R.id.linear_layout_id);
+
             if (!response.second.isEmpty()) {
-                System.out.println("Call from result");
                 try {
                     List<Achievement> achievements = mapper.readValue(response.second, new TypeReference<>() {});
                     List<MyAchievement> myAchievements = response.first;
@@ -363,15 +370,30 @@ public class YourProfile extends Fragment {
 
                                 ImageView image = new ImageView(getActivity());
 
+                                String name = achievement.getIcon().replace("-", "_").substring(4).replace(".svg", "");
+
+                                int resourceID = getActivity().getResources().getIdentifier(name, "drawable", getActivity().getPackageName());
+
+                                Picasso.get()
+                                        .load(resourceID)
+                                        .fit()
+                                        .centerInside()
+                                        .into(image, new Callback() {
+                                            @Override
+                                            public void onSuccess() {
+                                                System.out.println("Изображение загружено успешно!");
+                                            }
+
+                                            @Override
+                                            public void onError(Exception e) {
+                                                System.out.println("Загрузка изображения произошла с ошибкой!");
+                                            }
+                                        });
+
+                                image.setLayoutParams(layoutParams);
                                 image.setBackgroundColor(Color.parseColor(achievement.getColor()));
 
                                 imageContainer.addView(image);
-
-                                GlideApp.with(getActivity())
-                                        .as(PictureDrawable.class)
-                                        .listener(new SvgSoftwareLayerSetter())
-                                        .load(HTTPMethods.urlIGN + "/icons/" + achievement.getIcon())
-                                        .into(image);
                             }
                         }
                     }

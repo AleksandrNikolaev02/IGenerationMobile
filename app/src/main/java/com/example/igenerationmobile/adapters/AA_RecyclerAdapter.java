@@ -3,6 +3,7 @@ package com.example.igenerationmobile.adapters;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Path;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,10 +15,12 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.igenerationmobile.R;
+import com.example.igenerationmobile.http.HTTPMethods;
 import com.example.igenerationmobile.interfaces.RecyclerInterface;
 import com.example.igenerationmobile.model.RecyclerModel;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,11 +48,19 @@ public class AA_RecyclerAdapter extends RecyclerView.Adapter<AA_RecyclerAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull AA_RecyclerAdapter.AdapterHolder holder, int position) {
-        Picasso.get()
-                .load(list.get(position).getImage())
-                .fit()
-                .centerInside()
-                .into(holder.image);
+        String url = list.get(position).getImage();
+
+        if (url.contains(HTTPMethods.urlApi)) {
+            Picasso.get()
+                    .load(url)
+                    .fit()
+                    .centerInside()
+                    .into(holder.image);
+        } else {
+            Picasso.get()
+                    .load(R.drawable.no_icon)
+                    .into(holder.image);
+        }
 
         holder.title.setText(list.get(position).getTitle());
         holder.date.setText(list.get(position).getDate());

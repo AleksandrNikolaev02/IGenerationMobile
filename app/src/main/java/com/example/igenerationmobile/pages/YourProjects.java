@@ -249,7 +249,7 @@ public class YourProjects extends AppCompatActivity implements RecyclerInterface
                         }
                     }
 
-                    String projectImageURL = img_file.isEmpty() ? HTTPMethods.urlIGN + "/img/no_icon.png" :
+                    String projectImageURL = img_file.isEmpty() ? "no_icon.png" :
                             HTTPMethods.urlApi + "/image/" + img_file.replaceAll("\\\\/", "/");
 
                     int index_elem = adapter.getItemCount();

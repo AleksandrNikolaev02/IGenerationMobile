@@ -107,13 +107,19 @@ public class ViewProjectAnotherUser extends Fragment {
 
                 String imagePath = project.getImg_file();
 
-
-                Picasso.get()
-                        .load(imagePath.isEmpty() ? HTTPMethods.urlIGN + "/img/no_icon.png" :
-                                HTTPMethods.urlApi + "/image/" + imagePath.replaceAll("\\\\/", "/"))
-                        .fit()
-                        .centerInside()
-                        .into(projectImage);
+                if (imagePath.isEmpty()) {
+                    Picasso.get()
+                            .load(R.drawable.no_icon)
+                            .fit()
+                            .centerInside()
+                            .into(projectImage);
+                } else {
+                    Picasso.get()
+                            .load(HTTPMethods.urlApi + "/image/" + imagePath.replaceAll("\\\\/", "/"))
+                            .fit()
+                            .centerInside()
+                            .into(projectImage);
+                }
 
                 Created.setText(project.getCreated_at());
                 Place.setText(project.getPlace());

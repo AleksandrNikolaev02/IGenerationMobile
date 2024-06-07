@@ -115,11 +115,21 @@ public class ProfileAnotherUser extends AppCompatActivity {
                     String imageUrl = user.getString("img_file").isEmpty() ? HTTPMethods.urlIGN + "/img/avatar_00.png" :
                             HTTPMethods.urlApi + "/image/" + user.getString("img_file").replaceAll("\\\\/", "/");
 //                    new HTTPImage().execute(user.getString("img_file"));
-                    Picasso.get()
-                            .load(imageUrl)
-                            .fit()
-                            .centerInside()
-                            .into(shapeableImageView);
+
+                    if (user.getString("img_file").isEmpty()) {
+                        Picasso.get()
+                                .load(R.drawable.avatar_00)
+                                .fit()
+                                .centerInside()
+                                .into(shapeableImageView);
+                    } else {
+                        Picasso.get()
+                                .load(imageUrl)
+                                .fit()
+                                .centerInside()
+                                .into(shapeableImageView);
+                    }
+
                 } else {
                     byte[] imageAsBytes = Base64.decode(result.getBytes(), Base64.DEFAULT);
                     shapeableImageView.setImageBitmap(BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length));

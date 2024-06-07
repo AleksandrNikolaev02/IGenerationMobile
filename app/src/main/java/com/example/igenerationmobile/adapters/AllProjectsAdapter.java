@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.igenerationmobile.R;
+import com.example.igenerationmobile.http.HTTPMethods;
 import com.example.igenerationmobile.interfaces.RecyclerInterface;
 import com.example.igenerationmobile.model.AllProjectAdapterModel.ProjectModel;
 import com.squareup.picasso.Picasso;
@@ -43,12 +44,19 @@ public class AllProjectsAdapter extends RecyclerView.Adapter<AllProjectsAdapter.
     public void onBindViewHolder(@NonNull AllProjectsAdapter.AdapterHolder holder, int position) {
 
         ProjectModel model = projects.get(position);
+        String url = model.getProjectImage();
 
-        Picasso.get()
-                .load(model.getProjectImage())
-                .fit()
-                .centerInside()
-                .into(holder.image);
+        if (url.contains(HTTPMethods.urlApi)) {
+            Picasso.get()
+                    .load(url)
+                    .fit()
+                    .centerInside()
+                    .into(holder.image);
+        } else {
+            Picasso.get()
+                    .load(R.drawable.no_icon)
+                    .into(holder.image);
+        }
 
         holder.projectName.setText(model.getProjectName());
         holder.projectRating.setText(String.valueOf((float) model.getRating() / 10));
