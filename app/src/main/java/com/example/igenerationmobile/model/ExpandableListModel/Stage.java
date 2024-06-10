@@ -5,12 +5,14 @@ public class Stage {
     private Float rating;
     private boolean isTitle;
     private boolean isComment;
+    private boolean isButton;
 
-    public Stage(String title, Float rating, boolean isTitle, boolean isComment) {
+    public Stage(String title, Float rating, boolean isTitle, boolean isComment, boolean isButton) {
         this.title = title;
         this.rating = rating;
         this.isTitle = isTitle;
         this.isComment = isComment;
+        this.isButton = isButton;
     }
     public String getTitle() {
         return title;
@@ -34,5 +36,9 @@ public class Stage {
 
     public boolean isComment() {
         return isComment;
+    }
+
+    public boolean isButton() {
+        return isButton;
     }
 }

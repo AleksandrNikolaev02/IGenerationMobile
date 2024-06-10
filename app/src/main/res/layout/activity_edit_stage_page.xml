@@ -1,0 +1,32 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".pages.EditStagePage">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:ellipsize="end"
+        android:fontFamily="@font/poppins_bold"
+        android:singleLine="true"
+        android:text="@string/todo"
+        android:textColor="@color/black"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:popupTheme="@style/AppTheme.PopupOverlay"
+        app:title="Редактирование этапа" />
+
+    <ExpandableListView
+        android:id="@+id/ExpandableListView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/toolbar"
+        android:choiceMode="singleChoice"
+        android:dividerHeight="1dp">
+    </ExpandableListView>
+
+</RelativeLayout>

@@ -118,6 +118,8 @@ public class TrajectoryProject extends Fragment {
 
             Map<String, List<Stage>> childs = new HashMap<>();
 
+            List<Integer> stagesID = new ArrayList<>();
+
             try {
                 JSONArray jsonArray = new JSONArray(response);
 
@@ -130,10 +132,14 @@ public class TrajectoryProject extends Fragment {
                     if (level == 0) {
                         stages.add(stage);
 
+                        int id = section.getInt("id");
+
+                        stagesID.add(id);
+
                         JSONArray criteria_rel = section.getJSONArray("criteria_rel");
 
                         List<Stage> tmp = new ArrayList<>();
-                        tmp.add(new Stage("Оценки:", null, true, false));
+                        tmp.add(new Stage("Оценки:", null, true, false, false));
 
                         for (int j = 0; j < criteria_rel.length(); j++) {
                             JSONObject criteria = criteria_rel.getJSONObject(j);
@@ -149,7 +155,7 @@ public class TrajectoryProject extends Fragment {
                                 value += rate.getInt("value");
                             }
 
-                            tmp.add(new Stage(title, (float) (value) / (float) rates.length(), false, false));
+                            tmp.add(new Stage(title, (float) (value) / (float) rates.length(), false, false, false));
                         }
                         childs.put(stage, tmp);
 
@@ -167,7 +173,8 @@ public class TrajectoryProject extends Fragment {
                     }
                 }
 
-                adapter = new StagesAdapter(requireActivity().getApplicationContext(), stages, childs);
+                adapter = new StagesAdapter(requireActivity().getApplicationContext(),
+                        stages, childs, stagesID, getActivity(), project_id, track_id);
 
                 expandableListView.setAdapter(adapter);
 
@@ -263,17 +270,19 @@ public class TrajectoryProject extends Fragment {
 
             String stage = numericStages.get(i);
             List<Stage> stage_childs = adapter.childData.get(stage);
-            stage_childs.add(new Stage("Комментарии:", null, true, false));
+            stage_childs.add(new Stage("Комментарии:", null, true, false, false));
 
             System.out.println(expert_comments);
 
             if (expert_comments.isEmpty()) {
-                stage_childs.add(new Stage("Комментариев нет", null, false, true));
+                stage_childs.add(new Stage("Комментариев нет", null, false, true, false));
             } else {
                 for (String comment : expert_comments) {
-                    stage_childs.add(new Stage(comment, null, false, true));
+                    stage_childs.add(new Stage(comment, null, false, true, false));
                 }
             }
+
+            stage_childs.add(new Stage("Редактирование этапа", null, false, false, true));
 
             stateGroup.put(i, true);
 

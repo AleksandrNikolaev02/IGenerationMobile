@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage" />
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
@@ -19,6 +21,9 @@
         android:theme="@style/Theme.IGenerationMobile"
         tools:ignore="LockedOrientationActivity"
         tools:targetApi="31">
+        <activity
+            android:name=".pages.EditStagePage"
+            android:exported="false" />
         <activity
             android:name=".pages.NotificationPage"
             android:exported="false" />
@@ -73,7 +78,6 @@
             android:resource="@array/preloaded_fonts" />
 
         <receiver android:name=".notification.NotificationReceiver" />
-
     </application>
 
 </manifest>
