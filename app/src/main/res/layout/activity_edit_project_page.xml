@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -111,8 +111,103 @@
 
         </com.google.android.material.card.MaterialCardView>
 
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="20dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/black"
+                    android:text="Описание проекта"
+                    android:fontFamily="@font/poppins_medium"
+                    android:layout_marginStart="20dp"
+                    android:textSize="15sp"
+                    android:textStyle="bold"/>
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/edit_description"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:fontFamily="@font/poppinsregular"
+                    android:text="todo"
+                    android:textColor="@color/black"
+                    android:textSize="15sp"
+                    tools:ignore="TouchTargetSizeCheck">
+
+                </androidx.appcompat.widget.AppCompatEditText>
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:id="@+id/save_description"
+                    android:text="Сохранить описание"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:textSize="18sp"
+                    android:backgroundTint="@color/IGNColorBackground"
+                    app:cornerRadius = "20dp"/>
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="20dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/black"
+                    android:text="Название проекта"
+                    android:fontFamily="@font/poppins_medium"
+                    android:layout_marginStart="20dp"
+                    android:textSize="15sp"
+                    android:textStyle="bold"/>
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/edit_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:fontFamily="@font/poppinsregular"
+                    android:text="todo"
+                    android:textColor="@color/black"
+                    android:textSize="15sp"
+                    tools:ignore="TouchTargetSizeCheck">
+
+                </androidx.appcompat.widget.AppCompatEditText>
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:id="@+id/save_title"
+                    android:text="Сохранить название"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:textSize="18sp"
+                    android:backgroundTint="@color/IGNColorBackground"
+                    app:cornerRadius = "20dp"/>
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
 
     </LinearLayout>
 
 
-</RelativeLayout>
+</ScrollView>

@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import com.example.igenerationmobile.R;
 import com.example.igenerationmobile.http.HTTPMethods;
+import com.example.igenerationmobile.interfaces.UpdateUI;
 import com.example.igenerationmobile.model.ProjectID;
 import com.example.igenerationmobile.model.Token;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -31,7 +32,7 @@ import com.squareup.picasso.Picasso;
 import java.io.IOException;
 
 
-public class ViewProject extends Fragment {
+public class ViewProject extends Fragment implements UpdateUI {
 
     private final ObjectMapper mapper = new ObjectMapper();
     private ImageView projectImage;
@@ -86,6 +87,12 @@ public class ViewProject extends Fragment {
         new HTTPProcess().execute();
 
         return view;
+    }
+
+    @Override
+    @SuppressWarnings({"deprecation"})
+    public void update() {
+        new HTTPProcess().execute();
     }
 
     @SuppressLint("StaticFieldLeak")

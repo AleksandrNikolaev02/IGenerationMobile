@@ -58,6 +58,7 @@ public class YourProjects extends AppCompatActivity implements RecyclerInterface
     private String defaultSession;
     private boolean onResume = false;
     private boolean isFirst = true;
+    private boolean onRefresh = false;
 
     public YourProjects(){
 
@@ -126,6 +127,7 @@ public class YourProjects extends AppCompatActivity implements RecyclerInterface
     }
 
     @Override
+    @SuppressWarnings({"deprecation"})
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
@@ -138,6 +140,15 @@ public class YourProjects extends AppCompatActivity implements RecyclerInterface
             Intent intent = new Intent(this, CreateProject.class);
 
             startActivity(intent);
+            return true;
+        }
+        if (id == R.id.refresh) {
+            adapter.list.clear();
+
+            onResume = true;
+
+            new getProjects().execute();
+
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -271,6 +282,11 @@ public class YourProjects extends AppCompatActivity implements RecyclerInterface
             if (onResume) {
                 adapter.notifyDataSetChanged();
                 onResume = false;
+            }
+
+            if (onRefresh) {
+                adapter.notifyDataSetChanged();
+                onRefresh = false;
             }
 
             if (adapter.list.isEmpty()) {

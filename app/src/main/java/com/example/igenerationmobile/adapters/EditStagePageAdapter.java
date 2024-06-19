@@ -112,6 +112,9 @@ public class EditStagePageAdapter extends BaseExpandableListAdapter {
         title.loadDataWithBaseURL(null, titleStr, "text/html", "UTF-8", null);
         task.loadDataWithBaseURL(null, taskStr, "text/html", "UTF-8", null);
 
+        title.setBackgroundColor(context.getColor(R.color.title));
+        task.setBackgroundColor(context.getColor(R.color.task));
+
         return convertView;
     }
 

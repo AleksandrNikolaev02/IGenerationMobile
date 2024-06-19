@@ -17,6 +17,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -70,6 +71,76 @@ public class HTTPMethods {
         reader.close();
 
         return response;
+    }
+
+    public static int updateDescriptionProject(Token token, String description, int id) throws IOException {
+        URL url = new URL(urlApi + "/projects/" + id);
+
+        String request = "{\"id\":" + id + ",\"description\":\"" + description + "\"}";
+
+        byte[] requestData = request.getBytes(StandardCharsets.UTF_8);
+
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("PATCH");
+        connection.setRequestProperty("Accept", "application/json, text/plain, */*");
+        connection.setRequestProperty("Accept-Encoding", "gzip, deflate, br");
+        connection.setRequestProperty("Accept-Language", "ru,en;q=0.9,en-GB;q=0.8,en-US;q=0.7");
+        connection.setRequestProperty("Authorization", token.getTokenType() + " " + token.getAccessToken());
+        connection.setRequestProperty("Connection", "keep-alive");
+        connection.setRequestProperty("Content-Length", String.valueOf(requestData.length));
+        connection.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
+        connection.setRequestProperty("Host", "innostor.unn.ru");
+
+        connection.setDoOutput(true);
+
+        OutputStream outputStream = connection.getOutputStream();
+        outputStream.write(requestData);
+        outputStream.flush();
+        outputStream.close();
+
+        int status = connection.getResponseCode();
+
+        connection.connect();
+        connection.disconnect();
+
+        System.out.println(status);
+
+        return status;
+    }
+
+    public static int updateTitleProject(Token token, String title, int id) throws IOException {
+        URL url = new URL(urlApi + "/projects/" + id);
+
+        String request = "{\"id\":" + id + ",\"title\":\"" + title + "\"}";
+
+        byte[] requestData = request.getBytes(StandardCharsets.UTF_8);
+
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("PATCH");
+        connection.setRequestProperty("Accept", "application/json, text/plain, */*");
+        connection.setRequestProperty("Accept-Encoding", "gzip, deflate, br");
+        connection.setRequestProperty("Accept-Language", "ru,en;q=0.9,en-GB;q=0.8,en-US;q=0.7");
+        connection.setRequestProperty("Authorization", token.getTokenType() + " " + token.getAccessToken());
+        connection.setRequestProperty("Connection", "keep-alive");
+        connection.setRequestProperty("Content-Length", String.valueOf(requestData.length));
+        connection.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
+        connection.setRequestProperty("Host", "innostor.unn.ru");
+
+        connection.setDoOutput(true);
+
+        OutputStream outputStream = connection.getOutputStream();
+        outputStream.write(requestData);
+        outputStream.flush();
+        outputStream.close();
+
+        int status = connection.getResponseCode();
+
+        connection.connect();
+        connection.disconnect();
+
+        System.out.println(status);
+
+        return status;
     }
 
     public static String user(Token token) throws IOException {

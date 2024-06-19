@@ -1,6 +1,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <!-- Идентификатор и иконка для ImageButton -->
+
+    <item android:id="@+id/refresh_project"
+        android:title="My ImageButton"
+        android:icon="@drawable/refresh"
+        app:showAsAction="ifRoom|withText" />
+
     <item android:id="@+id/edit_project"
         android:title="My ImageButton"
         android:icon="@drawable/edit_pancel"

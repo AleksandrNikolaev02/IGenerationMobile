@@ -20,6 +20,7 @@ import com.example.igenerationmobile.R;
 import com.example.igenerationmobile.adapters.ProjectsAdapter;
 import com.example.igenerationmobile.http.HTTPMethods;
 import com.example.igenerationmobile.interfaces.RecyclerInterface;
+import com.example.igenerationmobile.interfaces.UpdateUI;
 import com.example.igenerationmobile.model.Token;
 import com.example.igenerationmobile.model.UserProject;
 import com.example.igenerationmobile.pages.MainPage;
@@ -37,7 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class UsersProject extends Fragment implements RecyclerInterface {
+public class UsersProject extends Fragment implements RecyclerInterface, UpdateUI {
 
     private Token token;
     private Integer project_id;
@@ -47,6 +48,7 @@ public class UsersProject extends Fragment implements RecyclerInterface {
     private Toolbar toolbar;
     private ProjectsAdapter adapter;
     private final ObjectMapper mapper = new ObjectMapper();
+    private boolean onRefresh = false;
 
     public UsersProject() {
     }
@@ -110,6 +112,16 @@ public class UsersProject extends Fragment implements RecyclerInterface {
         startActivity(intent);
     }
 
+    @Override
+    @SuppressWarnings({"deprecation"})
+    public void update() {
+        adapter.users.clear();
+
+        onRefresh = true;
+
+        new HTTPProcess().execute();
+    }
+
     @SuppressLint("StaticFieldLeak")
     @SuppressWarnings({"deprecation"})
     private class HTTPProcess extends AsyncTask<String, List<String>, List<String>> {
@@ -138,6 +150,7 @@ public class UsersProject extends Fragment implements RecyclerInterface {
             }
         }
 
+        @SuppressLint("NotifyDataSetChanged")
         @Override
         protected void onPostExecute(List<String> imageUrls) {
             super.onPostExecute(imageUrls);
@@ -166,6 +179,12 @@ public class UsersProject extends Fragment implements RecyclerInterface {
                     ));
 
                     adapter.notifyItemInserted(index_elem);
+
+                    if (onRefresh) {
+                        adapter.notifyDataSetChanged();
+
+                        onRefresh = false;
+                    }
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }
